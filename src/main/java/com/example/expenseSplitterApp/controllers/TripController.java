@@ -63,7 +63,7 @@ public class TripController {
             ObjectId tripId = new ObjectId(id);
             TripEntity trip = tripService.getTripById(tripId);
             if(trip != null){
-                return new ResponseEntity<>(trip,HttpStatus.FOUND);
+                return new ResponseEntity<>(trip,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -94,7 +94,7 @@ public class TripController {
                         employeeEntityDTO.setDues(employee.getDues());
                         employeesComp.add(employeeEntityDTO);
                     }
-                    return new ResponseEntity<>(employeesComp,HttpStatus.FOUND);
+                    return new ResponseEntity<>(employeesComp,HttpStatus.OK);
                 }else{
                     return new ResponseEntity<>("No Group Members Found For Trip",HttpStatus.NOT_FOUND);
                 }
@@ -114,7 +114,7 @@ public class TripController {
             List<EmployeeFinalExpenseReportDTO> employeeFinalExpenseReportDTOList =
                     tripService.getEmployeesFullExpenseReport(tripId);
             if(employeeFinalExpenseReportDTOList != null && !employeeFinalExpenseReportDTOList.isEmpty()){
-                return new ResponseEntity<>(employeeFinalExpenseReportDTOList,HttpStatus.FOUND);
+                return new ResponseEntity<>(employeeFinalExpenseReportDTOList,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("Couldn't Generate Employees Report",HttpStatus.NOT_FOUND);
             }

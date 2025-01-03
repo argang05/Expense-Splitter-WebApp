@@ -25,7 +25,7 @@ public class BillController {
             ObjectId tripId = new ObjectId(id);
             List<BillsEntity> foodBills = billService.getFoodBillsByTripId(tripId);
             if(foodBills != null && !foodBills.isEmpty()){
-                return new ResponseEntity<>(foodBills, HttpStatus.FOUND);
+                return new ResponseEntity<>(foodBills, HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("No Bills Found!",HttpStatus.NOT_FOUND);
             }
@@ -40,7 +40,7 @@ public class BillController {
         try{
             List<BillsEntity> foodBills = billService.getFoodBillsByEmpId(empId);
             if(foodBills != null && !foodBills.isEmpty()){
-                return new ResponseEntity<>(foodBills, HttpStatus.FOUND);
+                return new ResponseEntity<>(foodBills, HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("No Bills Found!",HttpStatus.NOT_FOUND);
             }

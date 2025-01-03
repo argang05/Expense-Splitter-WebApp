@@ -63,7 +63,7 @@ public class EmployeeController {
                             .maxAge(60 * 60 * 10) // 10 hours
                             .build();
 
-                    return ResponseEntity.status(HttpStatus.FOUND)
+                    return ResponseEntity.status(HttpStatus.OK)
                             .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                             .body(token);
                 }else {
@@ -95,7 +95,7 @@ public class EmployeeController {
                     employeeEntityDTO.setDues(employee.getDues());
                     employeesComp.add(employeeEntityDTO);
                 }
-                return new ResponseEntity<>(employeesComp,HttpStatus.FOUND);
+                return new ResponseEntity<>(employeesComp,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -123,7 +123,7 @@ public class EmployeeController {
                     employeeEntityDTO.setDues(employee.getDues());
                     employeesComp.add(employeeEntityDTO);
                 }
-                return new ResponseEntity<>(employeesComp,HttpStatus.FOUND);
+                return new ResponseEntity<>(employeesComp,HttpStatus.OK);
             }else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -146,7 +146,7 @@ public class EmployeeController {
                 employeeEntityDTO.setTotalFoodBill(employee.getTotalFoodBill());
                 employeeEntityDTO.setBills(employee.getBills());
                 employeeEntityDTO.setDues(employee.getDues());
-                return new ResponseEntity<>(employeeEntityDTO,HttpStatus.FOUND);
+                return new ResponseEntity<>(employeeEntityDTO,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("Employee Not Found",HttpStatus.NOT_FOUND);
             }
