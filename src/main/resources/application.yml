@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: Expense Splitter App
+  data:
+    mongodb:
+      uri: mongodb+srv://argang05:broly@cluster0.cosuksa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      database: expenseSplitterDb
+      #it will automatically create indexes in document fields:
+      auto-index-creation: true
+  main:
+    allow-circular-references: true
+
+exchange-rate-getter:
+  api:
+    key: fca_live_pniT7UHxMHQlwQcg5qo9vmvtzHSrCuhWx0VCkrti
+
+reactjs-frontend:
+  origin: http://localhost:5173
