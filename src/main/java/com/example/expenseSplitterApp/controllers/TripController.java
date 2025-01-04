@@ -36,7 +36,7 @@ public class TripController {
         try{
             List<TripEntity> trips = tripService.getAllTrips();
             if(trips != null && !trips.isEmpty()){
-                return new ResponseEntity<>(trips, HttpStatus.FOUND);
+                return new ResponseEntity<>(trips, HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
