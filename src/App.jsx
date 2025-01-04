@@ -1,13 +1,16 @@
 import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import HomePage from "./pages/HomePage";
+import PrivateRoutes from "./utils/PrivateRoutes";
+import MainContainer from "./MainContainer";
 
 const App = () => {
 
   return (
-    <div>
+    <div className="App">
       <Routes>
-          <Route path='/' element={<HomePage />} />
+        <Route element={<PrivateRoutes />}>
+          <Route path='*' element={<MainContainer/>} exact/>
+        </Route>
           <Route path="/login" element={<LoginPage />} exact/>
         </Routes>
     </div>
