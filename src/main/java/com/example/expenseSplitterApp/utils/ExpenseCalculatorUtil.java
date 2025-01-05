@@ -21,15 +21,44 @@ public class ExpenseCalculatorUtil {
 
     static {
         // Initialize per diem rates
-        perDiemRates.put("SM1-SM2", 40.0);
-        perDiemRates.put("M0-M5", 30.0);
-        perDiemRates.put("A0-A9", 20.0);
+        perDiemRates.put("SM1", 40.0);
+        perDiemRates.put("SM2", 40.0);
+        perDiemRates.put("M0", 30.0);
+        perDiemRates.put("M1", 30.0);
+        perDiemRates.put("M2", 30.0);
+        perDiemRates.put("M3", 30.0);
+        perDiemRates.put("M4", 30.0);
+        perDiemRates.put("M5", 30.0);
+        perDiemRates.put("A0", 20.0);
+        perDiemRates.put("A1", 20.0);
+        perDiemRates.put("A2", 20.0);
+        perDiemRates.put("A3", 20.0);
+        perDiemRates.put("A4", 20.0);
+        perDiemRates.put("A5", 20.0);
+        perDiemRates.put("A6", 20.0);
+        perDiemRates.put("A7", 20.0);
+        perDiemRates.put("A8", 20.0);
+        perDiemRates.put("A9", 20.0);
 
         // Initialize bill limits
-        billLimits.put("SM1-SM2", 80.0);
-        billLimits.put("M0-M5", 60.0);
-        billLimits.put("A0-A9", 40.0);
-
+        billLimits.put("SM1", 80.0);
+        billLimits.put("SM2", 80.0);
+        billLimits.put("M0", 60.0);
+        billLimits.put("M1", 60.0);
+        billLimits.put("M2", 60.0);
+        billLimits.put("M3", 60.0);
+        billLimits.put("M4", 60.0);
+        billLimits.put("M5", 60.0);
+        billLimits.put("A0", 40.0);
+        billLimits.put("A1", 40.0);
+        billLimits.put("A2", 40.0);
+        billLimits.put("A3", 40.0);
+        billLimits.put("A4", 40.0);
+        billLimits.put("A5", 40.0);
+        billLimits.put("A6", 40.0);
+        billLimits.put("A7", 40.0);
+        billLimits.put("A8", 40.0);
+        billLimits.put("A9", 40.0);
     }
 
     public void getExchangeRate(TripEntity trip){
