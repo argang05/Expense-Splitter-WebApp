@@ -3,12 +3,14 @@ import React, { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../contexts/UserContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import HomePage from './HomePage';
+import Loader from '../components/Loader';
 
 const LoginPage = () => {
 
   const navigate = useNavigate();
 
-  const { handleLogin,loggedIn,user } = useContext(DataContext);
+  const { handleLogin, loggedIn, user } = useContext(DataContext);
+  const [loading, setLoading] = useState(false);
 
   const [userData, setUserData] = useState({
     empId: "",
@@ -16,10 +18,12 @@ const LoginPage = () => {
   });
 
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     const response = await handleLogin(userData);
     if (response === "User LoggedIn") {
       alert(response)
+      setLoading(false)
       navigate("/")
     }
   }
@@ -34,6 +38,8 @@ const LoginPage = () => {
 
 
   return (
+    <>
+      {loading && <Loader/>}
         <div className='main-container bg-slate-900 h-screen w-100 flex items-center justify-center'>
           <form
         className='flex flex-col align-center gap-5 border-2 border-emerald-500 w-[40%] h-[auto] p-5 rounded-lg'
@@ -54,7 +60,8 @@ const LoginPage = () => {
                   />
               <button className='bg-emerald-500 text-white font-bold rounded-lg p-2' type="submit">Login</button>
           </form>
-    </div>
+      </div>
+      </>
   )
 }
 
