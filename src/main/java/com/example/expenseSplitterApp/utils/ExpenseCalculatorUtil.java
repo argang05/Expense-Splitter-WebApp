@@ -21,12 +21,12 @@ public class ExpenseCalculatorUtil {
 
     static {
         // Initialize per diem rates
-        perDiemRates.put("SM1-2", 40.0);
+        perDiemRates.put("SM1-SM2", 40.0);
         perDiemRates.put("M0-M5", 30.0);
         perDiemRates.put("A0-A9", 20.0);
 
         // Initialize bill limits
-        billLimits.put("SM1-2", 80.0);
+        billLimits.put("SM1-SM2", 80.0);
         billLimits.put("M0-M5", 60.0);
         billLimits.put("A0-A9", 40.0);
 

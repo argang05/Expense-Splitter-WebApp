@@ -17,10 +17,10 @@ public class EmployeeFinalExpenseReportDTO {
     private String empName;
     private String email;
     private String empTier;
-    private Double totalFoodBill;
+    private Map<String,Double> totalFoodBill = new HashMap<>();
     private double perDiemTotal;
     private double billableLimitTotal;
     private double remainingBalanceTotal;
     private String currencySymbol;
-    private Map<String,Double> dues = new HashMap<>();
+    private Map<String,Map<String,Double>> dues = new HashMap<>();
 }

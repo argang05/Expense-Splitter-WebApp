@@ -7,7 +7,9 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Document(collection = "trips")
 @Data
@@ -35,6 +37,10 @@ public class TripEntity {
     private Double exhangeRate;
 
     private String currencySymbol;
+
+    private Map<String , Double> totalFoodBill = new HashMap<>();
+
+    private Map<String , Map<String , Double>> dues = new HashMap<>();
 
     @DBRef
     private List<BillsEntity> bills = new ArrayList<>();

@@ -76,6 +76,7 @@ public class ExchangeRateGetterUtil {
            countryCurrencyMap.put("Kuwait", "KWD"); // Kuwaiti Dinar
            countryCurrencyMap.put("Bahrain", "BHD"); // Bahraini Dinar
            countryCurrencyMap.put("Oman", "OMR"); // Omani Rial
+        countryCurrencyMap.put("Germany", "EUR"); // Omani Rial
 
            // Small but globally recognized currencies
            countryCurrencyMap.put("Iceland", "ISK"); // Icelandic Krona

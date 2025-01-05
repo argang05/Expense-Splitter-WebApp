@@ -23,5 +23,5 @@ public class EmployeeEntityDTO {
     private String empTier;
     private Double totalFoodBill;
     private List<BillsEntity> bills = new ArrayList<>();
-    private Map<String,Double> dues = new HashMap<>();
+    private Map<String,Map<String,Double>> dues = new HashMap<>();
 }

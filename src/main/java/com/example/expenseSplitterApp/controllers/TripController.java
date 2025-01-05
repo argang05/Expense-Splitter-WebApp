@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/trip")
@@ -89,9 +90,9 @@ public class TripController {
                         employeeEntityDTO.setEmpName(employee.getEmpName());
                         employeeEntityDTO.setEmail(employee.getEmail());
                         employeeEntityDTO.setEmpTier(employee.getEmpTier());
-                        employeeEntityDTO.setTotalFoodBill(employee.getTotalFoodBill());
                         employeeEntityDTO.setBills(employee.getBills());
-                        employeeEntityDTO.setDues(employee.getDues());
+                        employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().get(employee.getEmpId()));
+                        employeeEntityDTO.setDues(trip.getDues());
                         employeesComp.add(employeeEntityDTO);
                     }
                     return new ResponseEntity<>(employeesComp,HttpStatus.OK);
@@ -123,5 +124,4 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

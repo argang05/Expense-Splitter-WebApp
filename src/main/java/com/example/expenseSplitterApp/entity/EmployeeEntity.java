@@ -37,10 +37,6 @@ public class EmployeeEntity {
     @NonNull
     private String empTier;
 
-    private Double totalFoodBill;
-
     @DBRef
     private List<BillsEntity> bills = new ArrayList<>();
-
-    private Map<String,Double> dues = new HashMap<>();
 }

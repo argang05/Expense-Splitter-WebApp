@@ -2,9 +2,12 @@ package com.example.expenseSplitterApp.controllers;
 
 import com.example.expenseSplitterApp.dto.EmployeeEntityDTO;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
+import com.example.expenseSplitterApp.entity.TripEntity;
 import com.example.expenseSplitterApp.services.EmployeeService;
+import com.example.expenseSplitterApp.services.TripService;
 import com.example.expenseSplitterApp.utils.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,9 @@ public class EmployeeController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private TripService tripService;
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerEmployee(@RequestBody EmployeeEntity employeeEntity){
@@ -78,11 +84,14 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/all-employees")
-    public ResponseEntity<?> getAllEmployees(){
+    @GetMapping("/all-employees/tripId/{id}")
+    public ResponseEntity<?> getAllEmployees(@PathVariable String id){
         try {
+            ObjectId tripId = new ObjectId(id);
             List<EmployeeEntity> employees = employeeService.getAllEmployees();
+
             if(employees != null && !employees.isEmpty()){
+                TripEntity trip = tripService.getTripById(tripId);
                 List<EmployeeEntityDTO> employeesComp = new ArrayList<>();
                 for(EmployeeEntity employee : employees) {
                     EmployeeEntityDTO employeeEntityDTO = new EmployeeEntityDTO();
@@ -90,9 +99,12 @@ public class EmployeeController {
                     employeeEntityDTO.setEmpName(employee.getEmpName());
                     employeeEntityDTO.setEmail(employee.getEmail());
                     employeeEntityDTO.setEmpTier(employee.getEmpTier());
-                    employeeEntityDTO.setTotalFoodBill(employee.getTotalFoodBill());
                     employeeEntityDTO.setBills(employee.getBills());
-                    employeeEntityDTO.setDues(employee.getDues());
+                    if(trip != null){
+                        employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().get(employee.getEmpId()));
+                        employeeEntityDTO.setDues(trip.getDues());
+                    }
+
                     employeesComp.add(employeeEntityDTO);
                 }
                 return new ResponseEntity<>(employeesComp,HttpStatus.OK);
@@ -105,22 +117,26 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/get-all-with-empids")
-    public ResponseEntity<?> getAllEmployeesWithEmpId(@RequestBody List<String> empIds){
+    @PostMapping("/get-all-with-empids/tripId/{id}")
+    public ResponseEntity<?> getAllEmployeesWithEmpId(@RequestBody List<String> empIds,@PathVariable String id){
         try{
+            ObjectId tripId = new ObjectId(id);
             List<EmployeeEntity> allEmployees = employeeService.getAllWithEmpIds(empIds);
 
             if(allEmployees != null && !allEmployees.isEmpty()){
                 List<EmployeeEntityDTO> employeesComp = new ArrayList<>();
+                TripEntity trip = tripService.getTripById(tripId);
                 for(EmployeeEntity employee : allEmployees){
                     EmployeeEntityDTO employeeEntityDTO = new EmployeeEntityDTO();
                     employeeEntityDTO.setEmpId(employee.getEmpId());
                     employeeEntityDTO.setEmpName(employee.getEmpName());
                     employeeEntityDTO.setEmail(employee.getEmail());
                     employeeEntityDTO.setEmpTier(employee.getEmpTier());
-                    employeeEntityDTO.setTotalFoodBill(employee.getTotalFoodBill());
                     employeeEntityDTO.setBills(employee.getBills());
-                    employeeEntityDTO.setDues(employee.getDues());
+                    if(trip != null){
+                        employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().get(employee.getEmpId()));
+                        employeeEntityDTO.setDues(trip.getDues());
+                    }
                     employeesComp.add(employeeEntityDTO);
                 }
                 return new ResponseEntity<>(employeesComp,HttpStatus.OK);
@@ -133,19 +149,23 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/empId/{empId}")
-    public ResponseEntity<?> getEmployeeById(@PathVariable String empId){
+    @GetMapping("/empId/{empId}/tripId/{id}")
+    public ResponseEntity<?> getEmployeeById(@PathVariable String empId,@PathVariable String id){
         try{
+            ObjectId tripId = new ObjectId(id);
             EmployeeEntity employee = employeeService.getEmployeeByEmpId(empId);
             if(employee != null){
+                TripEntity trip = tripService.getTripById(tripId);
                 EmployeeEntityDTO employeeEntityDTO = new EmployeeEntityDTO();
                 employeeEntityDTO.setEmpId(employee.getEmpId());
                 employeeEntityDTO.setEmpName(employee.getEmpName());
                 employeeEntityDTO.setEmail(employee.getEmail());
                 employeeEntityDTO.setEmpTier(employee.getEmpTier());
-                employeeEntityDTO.setTotalFoodBill(employee.getTotalFoodBill());
                 employeeEntityDTO.setBills(employee.getBills());
-                employeeEntityDTO.setDues(employee.getDues());
+                if(trip != null){
+                    employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().get(employee.getEmpId()));
+                    employeeEntityDTO.setDues(trip.getDues());
+                }
                 return new ResponseEntity<>(employeeEntityDTO,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("Employee Not Found",HttpStatus.NOT_FOUND);
