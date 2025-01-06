@@ -2,11 +2,13 @@
 /* eslint-disable react/prop-types */
 import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../contexts/UserContext";
+import ComponentLoader from "./ComponentLoader";
 
 const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
   const { getEmployeeById } = useContext(DataContext);
   const [empData, setEmpData] = useState(null);
   const [duesDetails, setDuesDetails] = useState([]); // To store the dues details
+  const [loading, setLoading] = useState(true); 
 
   // Fetch employee data on component mount
   useEffect(() => {
@@ -35,13 +37,15 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
 
         setDuesDetails(dues);
       }
+      setLoading(false); 
     }
     storeEmpData();
-  }, [empData,tripId,empId,getEmployeeById]);
+  }, [empData, tripId, empId, getEmployeeById]);
+  
 
   return (
     <>
-    <div className="h-[auto] w-full py-4 px-5 bg-emerald-500 text-white rounded-lg flex flex-col gap-4 items-start justify-center">
+      {loading ? <ComponentLoader/> : <div className="h-[auto] w-full py-4 px-5 bg-emerald-500 text-white rounded-lg flex flex-col gap-4 items-start justify-center">
       <h2 className="text-md font-medium">Name: {empData?.empName}</h2>
       <h2 className="text-md font-medium">Employee ID: {empData?.empId}</h2>
       <h2 className="text-md font-medium">Email: {empData?.email}</h2>
@@ -64,7 +68,8 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
       ) : (
         <h2 className="text-md font-medium">No dues found</h2>
       )}
-      </div>
+      </div>}
+    
       </>
   );
 };

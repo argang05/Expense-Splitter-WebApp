@@ -11,6 +11,17 @@ const UserContext = ({ children }) => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [loading, setLoading] = useState(true); // New loading state
 
+    const getAllEmployees = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/all`)
+            if (response.status === 200) {
+                console.log(response.data);
+            }
+        }catch (err) {
+            console.error("Trip Fetch Failed:", err.response ? err.response.data : err.message);
+        }
+    }
+
     const getEmployeeById = async (empId, tripId) => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/empId/${empId}/tripId/${tripId}`)
@@ -88,10 +99,10 @@ const UserContext = ({ children }) => {
     // Validate token on initial render
     useEffect(() => {
         validateToken();
-    }, []);
+    }, [validateToken]);
 
     return (
-        <DataContext.Provider value={{ handleLogin, handleLogout, user, loggedIn , loading, getAllTrips , getEmployeeById}}>
+        <DataContext.Provider value={{ handleLogin, handleLogout, user, loggedIn , loading, getAllTrips , getEmployeeById , getAllEmployees}}>
             {children}
         </DataContext.Provider>
     );

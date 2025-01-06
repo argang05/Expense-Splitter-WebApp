@@ -2,11 +2,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react';
 import { DataContext } from '../contexts/UserContext';
+import ComponentLoader from "./ComponentLoader";
 
 const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
   const { getEmployeeById } = useContext(DataContext);
   const [payerName, setPayerName] = useState(null);
   const [sharesDetails, setSharesDetails] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchBillDetails = async () => {
@@ -26,6 +28,7 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
             })
           );
           setSharesDetails(contributors);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error fetching bill details:', error);
@@ -36,11 +39,13 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
   }, [bill, getEmployeeById,tripId]);
 
   return (
-    <div className="h-auto w-full py-4 px-5 bg-emerald-500 text-white rounded-lg flex flex-col gap-4 items-start justify-center">
+  <>
+    {loading ?<ComponentLoader/> 
+    : <div className="h-64 w-full py-6 px-5 bg-emerald-500 text-white rounded-lg flex items-center justify-between">
+      <div className="flex flex-col items-start justify-center gap-4">
       <h2 className="text-md font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
       <h2 className="text-md font-medium">
-        Bill Amount: {currencySymbol}
-        {bill?.billAmt || 0}
+        Bill Amount: {currencySymbol} {bill?.billAmt || 0}
       </h2>
       <h2 className="text-md font-medium">Bill Payer: {payerName || 'N/A'}</h2>
       <h2 className="text-md font-semibold">Contribution Record:</h2>
@@ -53,7 +58,14 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
       ) : (
         <h2 className="text-md font-medium">No Contributions</h2>
       )}
-    </div>
+      </div>
+      <div className="h-full">
+        <a href={bill?.imageUrl} target="_blank" >
+          <img className="w-auto h-full" src={bill?.imageUrl} alt="food-bill"/>
+        </a>
+      </div>
+        </div>}
+      </>
   );
 };
 
