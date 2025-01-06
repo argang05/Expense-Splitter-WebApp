@@ -32,4 +32,5 @@ public class BillsEntity {
     private Double perPersonShare;
     private List<String> contributorsIds;
     private Map<String,Double> contributerShare = new HashMap<>();
+    private String imageUrl;
 }

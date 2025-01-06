@@ -10,6 +10,7 @@ import com.example.expenseSplitterApp.utils.ExchangeRateGetterUtil;
 import com.example.expenseSplitterApp.utils.ExpenseCalculatorUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class TripService {
     private EmployeeRepository employeeRepository;
 
     public List<TripEntity> getAllTrips() {
-        return tripRepository.findAll();
+        return tripRepository.findAll(Sort.by(Sort.Direction.DESC, "_id"));
     }
 
     public void saveNewTrip(TripEntity trip) {

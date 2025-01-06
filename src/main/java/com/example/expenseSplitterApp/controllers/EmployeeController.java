@@ -46,6 +46,25 @@ public class EmployeeController {
         }
     }
 
+    @PostMapping("/signupList")
+    public ResponseEntity<?> registerEmployee(@RequestBody List<EmployeeEntity> employeeEntityList) {
+        try{
+            if (employeeEntityList != null && !employeeEntityList.isEmpty()) {
+                for (EmployeeEntity employeeEntity : employeeEntityList) {
+                    if (employeeEntity.getEmpId().isEmpty()) {
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                    employeeService.saveEmployee(employeeEntity);
+                }
+                return new ResponseEntity<>(employeeEntityList, HttpStatus.CREATED);
+            }
+        }catch (Exception e) {
+            log.error("Exception Occurred while signing up user: ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return null;
+    }
+
     @PostMapping("/signin")
     public ResponseEntity<?> loginEmployee(@RequestBody EmployeeEntity employeeEntity){
         if (employeeEntity.getEmpId().isEmpty()) {
@@ -84,8 +103,34 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllEmployees(){
+        try {
+            List<EmployeeEntity> employees = employeeService.getAllEmployees();
+
+            if(employees != null && !employees.isEmpty()){
+                List<EmployeeEntityDTO> employeesComp = new ArrayList<>();
+                for(EmployeeEntity employee : employees) {
+                    EmployeeEntityDTO employeeEntityDTO = new EmployeeEntityDTO();
+                    employeeEntityDTO.setEmpId(employee.getEmpId());
+                    employeeEntityDTO.setEmpName(employee.getEmpName());
+                    employeeEntityDTO.setEmail(employee.getEmail());
+                    employeeEntityDTO.setEmpTier(employee.getEmpTier());
+                    employeeEntityDTO.setBills(employee.getBills());
+                    employeesComp.add(employeeEntityDTO);
+                }
+                return new ResponseEntity<>(employeesComp,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            log.error("Error occurred while getting all employees ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/all-employees/tripId/{id}")
-    public ResponseEntity<?> getAllEmployees(@PathVariable String id){
+    public ResponseEntity<?> getAllEmployeesTripWise(@PathVariable String id){
         try {
             ObjectId tripId = new ObjectId(id);
             List<EmployeeEntity> employees = employeeService.getAllEmployees();
@@ -149,6 +194,26 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping("/empId/{empId}")
+    public ResponseEntity<?> getBasicEmployeeById(@PathVariable String empId){
+        try{
+            EmployeeEntity employee = employeeService.getEmployeeByEmpId(empId);
+            if(employee != null){
+                EmployeeEntityDTO employeeEntityDTO = new EmployeeEntityDTO();
+                employeeEntityDTO.setEmpId(employee.getEmpId());
+                employeeEntityDTO.setEmpName(employee.getEmpName());
+                employeeEntityDTO.setEmail(employee.getEmail());
+                employeeEntityDTO.setEmpTier(employee.getEmpTier());
+                employeeEntityDTO.setBills(employee.getBills());
+                return new ResponseEntity<>(employeeEntityDTO,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Employee Not Found",HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while getting all employees ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @GetMapping("/empId/{empId}/tripId/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable String empId,@PathVariable String id){
         try{
