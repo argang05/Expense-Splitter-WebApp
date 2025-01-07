@@ -1,5 +1,6 @@
 package com.example.expenseSplitterApp.services;
 
+import com.example.expenseSplitterApp.dto.EmployeeDTOWithPassword;
 import com.example.expenseSplitterApp.dto.EmployeeEntityDTO;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.repositories.EmployeeRepository;
@@ -52,14 +53,21 @@ public class EmployeeService {
 
     public List<EmployeeEntity> getAllEmployees(){
         return employeeRepository.findAll();
-
-
     }
 
     public List<EmployeeEntity> getAllWithEmpIds(List<String> empIds){
         return employeeRepository.findByEmpIdIn(empIds);
     }
 
-
+    public void updateEmployeeDetail(String empId, EmployeeDTOWithPassword employee){
+        EmployeeEntity employeeEntity = employeeRepository.findByEmpId(empId);
+        if(employeeEntity != null){
+            employeeEntity.setEmpName(employee.getEmpName());
+            employeeEntity.setEmail(employee.getEmail());
+            employeeEntity.setPassword(hashPassword(employee.getPassword()));
+            employeeEntity.setEmpTier(employee.getEmpTier());
+            employeeRepository.save(employeeEntity);
+        }
+    }
 
 }

@@ -73,7 +73,12 @@ public class BillController {
                 bill.setImageUrl(imageUrl); // Set the image URL in the bill
             }
 
-            billService.createBill(bill, tripId);
+            if(bill.getSplitEqually() == true){
+                billService.createBillSplitEqual(bill, tripId);
+            }else{
+                billService.createBillSplitUnequal(bill, tripId);
+            }
+
             return new ResponseEntity<>(bill, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Unexpected Error While Creating Bill: ", e);

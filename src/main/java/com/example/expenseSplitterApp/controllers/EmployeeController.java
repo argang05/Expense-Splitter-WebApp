@@ -1,5 +1,6 @@
 package com.example.expenseSplitterApp.controllers;
 
+import com.example.expenseSplitterApp.dto.EmployeeDTOWithPassword;
 import com.example.expenseSplitterApp.dto.EmployeeEntityDTO;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -214,6 +216,29 @@ public class EmployeeController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    @GetMapping("/empId-with-pass/{empId}")
+    public ResponseEntity<?> getBasicEmployeeByIdWithPassword(@PathVariable String empId){
+        try{
+            EmployeeEntity employee = employeeService.getEmployeeByEmpId(empId);
+            if(employee != null){
+                EmployeeDTOWithPassword employeeEntityDTO = new EmployeeDTOWithPassword();
+                employeeEntityDTO.setEmpId(employee.getEmpId());
+                employeeEntityDTO.setEmpName(employee.getEmpName());
+                employeeEntityDTO.setPassword(employee.getPassword());
+                employeeEntityDTO.setEmail(employee.getEmail());
+                employeeEntityDTO.setEmpTier(employee.getEmpTier());
+                return new ResponseEntity<>(employeeEntityDTO,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Employee Not Found",HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while getting all employees ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/empId/{empId}/tripId/{id}")
     public ResponseEntity<?> getEmployeeById(@PathVariable String empId,@PathVariable String id){
         try{
@@ -228,7 +253,7 @@ public class EmployeeController {
                 employeeEntityDTO.setEmpTier(employee.getEmpTier());
                 employeeEntityDTO.setBills(employee.getBills());
                 if(trip != null){
-                    employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().get(employee.getEmpId()));
+                    employeeEntityDTO.setTotalFoodBill(trip.getTotalFoodBill().getOrDefault(employee.getEmpId(),0.0));
                     employeeEntityDTO.setDues(trip.getDues());
                 }
                 return new ResponseEntity<>(employeeEntityDTO,HttpStatus.OK);
@@ -241,7 +266,16 @@ public class EmployeeController {
         }
     }
 
-
+    @PutMapping("/update-emp-details/{empId}")
+    public ResponseEntity<?> updateEmployeeDetails(@PathVariable String empId,@RequestBody EmployeeDTOWithPassword employee){
+        try{
+            employeeService.updateEmployeeDetail(empId,employee);
+            return new ResponseEntity<>(employee , HttpStatus.CREATED);
+        }catch (Exception e) {
+            log.error("Error occurred while getting all employees ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 
 }

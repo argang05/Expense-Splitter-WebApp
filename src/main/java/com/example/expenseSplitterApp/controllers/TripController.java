@@ -32,10 +32,10 @@ public class TripController {
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllTrips(){
+    @GetMapping("/all/empId/{empId}")
+    public ResponseEntity<?> getAllTrips(@PathVariable String empId){
         try{
-            List<TripEntity> trips = tripService.getAllTrips();
+            List<TripEntity> trips = tripService.getAllTrips(empId);
             if(trips != null && !trips.isEmpty()){
                 return new ResponseEntity<>(trips, HttpStatus.OK);
             }else{

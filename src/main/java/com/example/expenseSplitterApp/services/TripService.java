@@ -6,20 +6,22 @@ import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
 import com.example.expenseSplitterApp.repositories.EmployeeRepository;
 import com.example.expenseSplitterApp.repositories.TripRepository;
+import com.example.expenseSplitterApp.repositories.TripRepositoryImpl;
 import com.example.expenseSplitterApp.utils.ExchangeRateGetterUtil;
 import com.example.expenseSplitterApp.utils.ExpenseCalculatorUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TripService {
+
+    @Value("${admin-empid}")
+    private String adminEmpId;
 
     @Autowired
     private EmployeeService employeeService;
@@ -36,8 +38,15 @@ public class TripService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public List<TripEntity> getAllTrips() {
-        return tripRepository.findAll(Sort.by(Sort.Direction.DESC, "_id"));
+    @Autowired
+    private TripRepositoryImpl tripRepositoryImpl;
+
+    public List<TripEntity> getAllTrips(String empId) {
+        if(empId.equalsIgnoreCase(adminEmpId)){
+            return tripRepositoryImpl.getAllTripsWithinThreeMonths();
+        }else{
+            return tripRepositoryImpl.getAllTripsWithinThreeMonthsEmployeeSpecific(empId);
+        }
     }
 
     public void saveNewTrip(TripEntity trip) {
@@ -77,11 +86,12 @@ public class TripService {
                 empExpRepDto.setEmail(groupMember.getEmail());
                 empExpRepDto.setEmpTier(groupMember.getEmpTier());
                 empExpRepDto.setCurrencySymbol(trip.getCurrencySymbol());
-                empExpRepDto.setTotalFoodBill(trip.getTotalFoodBill());
+                empExpRepDto.setTotalFoodBill(trip.getTotalFoodBill().getOrDefault(groupMember.getEmpId(),0.0));
                 empExpRepDto.setPerDiemTotal(perDiemTotal);
                 empExpRepDto.setBillableLimitTotal(billableLimitTotal);
                 empExpRepDto.setRemainingBalanceTotal(remainingBalance);
                 empExpRepDto.setDues(trip.getDues());
+
 
                 //Add to list:
                 employeeFinalExpenseReportDTOList.add(empExpRepDto);

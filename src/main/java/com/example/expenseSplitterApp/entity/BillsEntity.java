@@ -26,6 +26,8 @@ public class BillsEntity {
     @NonNull
     private Boolean splitBill;
     @NonNull
+    private Boolean splitEqually;
+    @NonNull
     private int numberOfContributors;
     @NonNull
     private String billPayer;
