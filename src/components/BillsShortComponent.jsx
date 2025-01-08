@@ -41,29 +41,30 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
   return (
   <>
     {loading ?<ComponentLoader/> 
-    : <div className="h-64 w-full py-6 px-5 bg-emerald-500 text-white rounded-lg flex items-center justify-between">
-      <div className="flex flex-col items-start justify-center gap-4">
-      <h2 className="text-md font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
-      <h2 className="text-md font-medium">
-        Bill Amount: {currencySymbol} {bill?.billAmt || 0}
-      </h2>
-      <h2 className="text-md font-medium">Bill Payer: {payerName || 'N/A'}</h2>
-      <h2 className="text-md font-semibold">Contribution Record:</h2>
-      {sharesDetails.length > 0 ? (
-        sharesDetails.map((share, index) => (
-          <h2 key={index} className="text-md font-semibold">
-            {share.empName}: {currencySymbol} {share.amount}
-          </h2>
-        ))
-      ) : (
-        <h2 className="text-md font-medium">No Contributions</h2>
-      )}
-      </div>
-      <div className="h-full">
-        <a href={bill?.imageUrl} target="_blank" >
-          <img className="w-auto h-full" src={bill?.imageUrl} alt="food-bill"/>
-        </a>
-      </div>
+        :
+        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-emerald-500 text-white rounded-lg flex items-center justify-between">
+            <div className="h-64 sm:h-72 flex flex-col items-start justify-center gap-4">
+            <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
+            <h2 className="text-sm sm:text-lg font-medium">
+              Bill Amount: {currencySymbol} {bill?.billAmt || 0}
+            </h2>
+            <h2 className="text-sm sm:text-lg font-medium">Bill Payer: {payerName || 'N/A'}</h2>
+            <h2 className="text-sm sm:text-lg font-semibold">Contribution Record:</h2>
+            {sharesDetails.length > 0 ? (
+              sharesDetails.map((share, index) => (
+                <h2 key={index} className="text-sm sm:text-lg font-semibold">
+                  {share.empName}: {currencySymbol} {share.amount}
+                </h2>
+              ))
+            ) : (
+              <h2 className="text-sm sm:text-lg font-medium">No Contributions</h2>
+            )}
+            </div>
+            <div className="sm:h-64 h-72">
+              <a href={bill?.imageUrl} target="_blank" >
+                <img className="w-auto sm:w-52 h-full rounded-lg" src={bill?.imageUrl} alt="food-bill"/>
+              </a>
+            </div>
         </div>}
       </>
   );

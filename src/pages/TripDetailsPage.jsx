@@ -7,6 +7,7 @@ import BillsShortComponent from '../components/BillsShortComponent';
 import { DataContext } from '../contexts/UserContext';
 import Loader from '../components/Loader';
 import CreateBillForm from '../components/CreateBillForm';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
 
 const TripDetailsPage = () => {
     const { tripid } = useParams();
@@ -18,13 +19,12 @@ const TripDetailsPage = () => {
       async function getTripDetail() {
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/id/${tripid}`);
           if (response.status === 200) {
-            console.log(response.data)
               setTripDetail(response.data);
               setLoading(false);
           }
       }
         getTripDetail();
-    }, [tripid,tripDetail])
+    }, [tripDetail])
     
   const handleFormSubmit = async (formData) => {
     try {
@@ -39,12 +39,35 @@ const TripDetailsPage = () => {
             }
           );
 
-          if (response.status === 201) {
-            alert("Bill Created Successfully!");
-          } else {
+      if (response.status === 201) {
+            setLoading(false);
+            toast.success("Bill Created Successfully!", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+              });
+      } else {
+        setLoading(false);
             console.error("Failed to create bill:", response);
+              toast.error("Failed to create bill!", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+              });
       }
-      setLoading(false);
+      
         } catch (err) {
           console.error("Failed to create bill:", err.response ? err.response.data : err.message);
         }
@@ -52,8 +75,8 @@ const TripDetailsPage = () => {
     return (
     <>
       {loading && <Loader/>}
-      <div className='container  w-full flex items-center justify-center'>
-          <div className='mt-40 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg'>
+      <div className='container w-full flex items-center justify-center'>
+          <div className='mb-8 mt-28 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg'>
               <h1 className='text-3xl font-bold text-emerald-300'>{tripDetail?.tripName.toUpperCase()}:</h1>
               <h3 className='text-lg text-emerald-400 font-medium'>Type: {tripDetail?.tripType}</h3>
               <h3 className='text-lg text-emerald-400 font-medium'>Purpose: {tripDetail?.tripPurpose}</h3>
@@ -70,17 +93,22 @@ const TripDetailsPage = () => {
               <h3 className='text-xl text-emerald-400 font-semibold'>Bill Records:</h3>
               <div className='w-full h-auto flex justify-center'>
                 <button
-                    className='scale-out h-auto w-[15%] p-4 cursor-pointer text-lg font-semibold bg-sky-600 rounded-2xl'
+                    className='scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-sky-600 rounded-2xl'
                     onClick={() => setShowForm(true)}
                 >
                     Add Bill
                 </button>
               </div>
-              {tripDetail?.bills.map((bill) => (
+            {(tripDetail?.bills.length <= 0) ?
+              <div className="h-20 w-full py-6 px-5 bg-emerald-500 text-white rounded-lg flex items-center justify-between">
+              <h1 className='text-2xl font-bold'>No Bill Records Found!</h1>
+            </div>
+            : 
+              tripDetail?.bills.map((bill) => (
                   <BillsShortComponent key={bill.id} bill={bill} currencySymbol={tripDetail?.currencySymbol} tripId={tripDetail.id} />
               ))}
             <div className='w-full h-auto flex justify-center'>
-            <NavLink to="#" className="scale-out h-auto w-[40%] text-center p-4 cursor-pointer text-lg font-semibold bg-sky-600 rounded-2xl">Calculate Employee Expense Records</NavLink>
+              <NavLink to={`/trip/employee-expense-report/${tripDetail?.id}`} className="scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-sky-600 rounded-2xl">Calculate Employee Expense Records</NavLink>
             </div>
                 </div>
                 {showForm && (
@@ -91,8 +119,21 @@ const TripDetailsPage = () => {
             onBillFormSubmit={handleFormSubmit}
             />
       
-      )}
-      </div>
+          )}
+        </div>
+    <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          transition={Bounce}
+          />
     </>
   )
 }

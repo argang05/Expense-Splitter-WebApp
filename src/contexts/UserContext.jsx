@@ -31,12 +31,11 @@ const UserContext = ({ children }) => {
         } catch (err) {
             console.error("Trip Fetch Failed:", err.response ? err.response.data : err.message);
         }
-        
     }
 
-    const getAllTrips = async () => {
+    const getAllTrips = async (empId) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/all`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/all/empId/${empId}`);
             if (response.status === 200) {
                 return response.data;
             }
@@ -47,7 +46,7 @@ const UserContext = ({ children }) => {
 
     const storeUserDetails = async (empId) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/empId/${empId}`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/empId-with-pass/${empId}`);
             setUser(response.data)
             
         } catch (err) {
@@ -99,10 +98,10 @@ const UserContext = ({ children }) => {
     // Validate token on initial render
     useEffect(() => {
         validateToken();
-    }, [validateToken]);
+    }, []);
 
     return (
-        <DataContext.Provider value={{ handleLogin, handleLogout, user, loggedIn , loading, getAllTrips , getEmployeeById , getAllEmployees}}>
+        <DataContext.Provider value={{ handleLogin, handleLogout, user, setUser, loggedIn , loading, getAllTrips , getEmployeeById , getAllEmployees}}>
             {children}
         </DataContext.Provider>
     );

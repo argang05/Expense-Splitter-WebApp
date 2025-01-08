@@ -11,12 +11,15 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     isInternational: true,
     continent: "",
     country: "",
-    numberOfDays: "",
     groupMembersIds: [],
   });
-    
-  const [isInternationalText, setIsInternationalText] = useState("");
 
+  const [tripDate, setTripDate] = useState({
+        fromDate: "",
+        toDate: "",
+  })
+
+  const [isInternationalText, setIsInternationalText] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
@@ -57,6 +60,15 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     }));
   };
 
+  const calculateNumberOfDays = () => {
+    const fromDate = new Date(tripDate.fromDate);
+    const toDate = new Date(tripDate.toDate);
+    if (fromDate && toDate && toDate >= fromDate) {
+      return Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
+    }
+    return 0;
+  };
+
   const handleAddGroupMember = (employeeId) => {
     if (!tripData.groupMembersIds.includes(employeeId)) {
       setTripData((prevData) => ({
@@ -78,16 +90,22 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-      if (isInternationalText === "No") {
-          setTripData(tripData.isInternational = false);
-      }
-    onSubmit(tripData);
+    if (isInternationalText === "No") {
+      setTripData((prevData) => ({ ...prevData, isInternational: false }));
+    }
+    const numberOfDays = calculateNumberOfDays();
+    if (numberOfDays <= 0) {
+      alert("Please select a valid date range.");
+      return;
+    }
+    const finalData = { ...tripData, numberOfDays };
+    onSubmit(finalData);
     onClose(); // Close the form after submission
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
-      <div className="bg-white p-8 rounded-lg w-[120%] md:w-[70%] lg:w-[50%] overflow-y-auto">
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div className="mt-32 bg-white p-8 rounded-lg w-[90%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-emerald-500 mb-5">Add New Trip</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Trip Name */}
@@ -110,8 +128,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             onChange={handleInputChange}
             className="p-2 border rounded-md  text-black"
             required
-            />
-                  
+          />
+
           {/* Trip Purpose */}
           <input
             type="text"
@@ -123,28 +141,32 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             required
           />
 
-        {/* Is International */}
-        <div className="flex items-start gap-2">
+          {/* Is International */}
+          <div className="flex items-start gap-2">
             <label className="text-gray-400">Is International?: </label>
-            <label className="text-gray-400"><input
-                type='radio'
+            <label className="text-gray-400">
+              <input
+                type="radio"
                 name="isInternationalYes"
                 value="Yes"
                 checked={isInternationalText === "Yes"}
-                onChange={(e) => {setIsInternationalText(e.target.value)}}    
+                onChange={(e) => setIsInternationalText(e.target.value)}
                 className="p-2 border rounded-md"
-            />
-            Yes</label>
-            <label className="text-gray-400"><input
-                type='radio'
+              />
+              Yes
+            </label>
+            <label className="text-gray-400">
+              <input
+                type="radio"
                 name="isInternationalNo"
-                value="No"          
+                value="No"
                 checked={isInternationalText === "No"}
-                onChange={(e) => {setIsInternationalText(e.target.value)}}    
+                onChange={(e) => setIsInternationalText(e.target.value)}
                 className="p-2 border rounded-md"
-            />
-            No</label>
-        </div>
+              />
+              No
+            </label>
+          </div>
 
           {/* Country */}
           <input
@@ -168,14 +190,23 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             required
           />
 
-          {/* Number of Days */}
+          {/* From Date */}
           <input
-            type="number"
-            name="numberOfDays"
-            placeholder="Number of Days"
-            value={tripData.numberOfDays}
-            onChange={handleInputChange}
-            className="p-2 border rounded-md text-black"
+            type="date"
+            name="fromDate"
+            value={tripDate.fromDate}
+            onChange={(e) => setTripDate({ ...tripDate, fromDate: e.target.value })}
+            className="p-2 border rounded-md text-gray-400"
+            required
+          />
+
+          {/* To Date */}
+          <input
+            type="date"
+            name="toDate"
+            value={tripDate.toDate}
+            onChange={(e) => setTripDate({ ...tripDate, toDate: e.target.value })}
+            className="p-2 border rounded-md text-gray-400"
             required
           />
 
