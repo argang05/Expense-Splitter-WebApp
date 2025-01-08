@@ -3,6 +3,7 @@ package com.example.expenseSplitterApp.controllers;
 import com.example.expenseSplitterApp.dto.EmployeeEntityDTO;
 import com.example.expenseSplitterApp.dto.EmployeeFinalExpenseReportDTO;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
+import com.example.expenseSplitterApp.entity.ExchangeRateEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
 import com.example.expenseSplitterApp.services.EmployeeService;
 import com.example.expenseSplitterApp.services.TripService;
@@ -108,7 +109,7 @@ public class TripController {
         }
     }
 
-    @GetMapping("/getExpenseReport/tripId/{id}")
+    @GetMapping("/get-expense-report/tripId/{id}")
     public ResponseEntity<?> getEmployeesFullExpenseReport(@PathVariable String id){
         try{
             ObjectId tripId = new ObjectId(id);
@@ -121,6 +122,22 @@ public class TripController {
             }
         } catch (Exception e) {
             log.error("Error occurred while fetching employee expense report ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update-exchange-rate/empId/{empId}/tripId/{id}")
+    public ResponseEntity<?> updateExchangeRate(@PathVariable String empId, @PathVariable String id , @RequestBody ExchangeRateEntity exchangeRateEntity){
+        try {
+            ObjectId tripId = new ObjectId(id);
+            Boolean isValid = tripService.updateExchangeRate(empId,exchangeRateEntity,tripId);
+            if(isValid){
+                return new ResponseEntity<>(exchangeRateEntity , HttpStatus.CREATED);
+            }else {
+                return new ResponseEntity<>("Only Admin Is Allowed To Perform This Task! ",HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while updating exchange rate: ",e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

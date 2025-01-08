@@ -34,7 +34,7 @@ public class TripEntity {
     @NonNull
     private List<String> groupMembersIds;
 
-    private Double exhangeRate;
+    private Double exchangeRate;
 
     private String currencySymbol;
 

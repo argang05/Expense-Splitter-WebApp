@@ -62,7 +62,7 @@ public class ExpenseCalculatorUtil {
     }
 
     public void getExchangeRate(TripEntity trip){
-        exchangeRate = trip.getExhangeRate();
+        exchangeRate = trip.getExchangeRate();
     }
 
     public double calculatePerDiem(String tier, int days, TripEntity trip) {

@@ -3,6 +3,7 @@ package com.example.expenseSplitterApp.services;
 import com.example.expenseSplitterApp.dto.EmployeeFinalExpenseReportDTO;
 import com.example.expenseSplitterApp.entity.BillsEntity;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
+import com.example.expenseSplitterApp.entity.ExchangeRateEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
 import com.example.expenseSplitterApp.repositories.EmployeeRepository;
 import com.example.expenseSplitterApp.repositories.TripRepository;
@@ -53,7 +54,7 @@ public class TripService {
         int groupStrength = trip.getGroupMembersIds().toArray().length;
         trip.setGroupStrength(groupStrength);
         trip.setCurrencySymbol(exchangeRateGetterUtil.getCurrencySymbolByCountryName(trip.getCountry()));
-        trip.setExhangeRate(Math.round(exchangeRateGetterUtil.getExchangeRate(trip.getCountry()) * 100.0) / 100.0);
+        trip.setExchangeRate(Math.round(exchangeRateGetterUtil.getExchangeRate(trip.getCountry()) * 100.0) / 100.0);
         tripRepository.save(trip);
     }
 
@@ -99,6 +100,21 @@ public class TripService {
             return employeeFinalExpenseReportDTOList;
         }
         return null;
+    }
+
+    public Boolean updateExchangeRate(String empId, ExchangeRateEntity exchangeRateEntity, ObjectId tripId){
+        if(empId.equalsIgnoreCase(adminEmpId)){
+            TripEntity trip = tripRepository.findById(tripId).orElse(null);
+            if(trip != null){
+                trip.setExchangeRate(exchangeRateEntity.getExchangeRate());
+                tripRepository.save(trip);
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 }
 
