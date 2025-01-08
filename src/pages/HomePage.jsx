@@ -9,7 +9,7 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 
 const HomePage = () => {
 
-  const { user , getAllTrips } = useContext(DataContext);
+  const { user, getAllTrips } = useContext(DataContext);
 
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true)
@@ -22,15 +22,15 @@ const HomePage = () => {
       setLoading(false);
     }
     storeAllTripsData();
-  }, [getAllTrips,employee?.empId,user]);
+  }, [getAllTrips, employee?.empId, user]);
 
   const createTrip = async (tripData) => {
     const response = await axios.post(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/create-trip`, tripData);
     try {
       if (response.status === 201) {
-        return {success:true ,  message: "Trip Entity Created Successfully!"};
+        return { success: true, message: "Trip Entity Created Successfully!" };
       } else {
-        return {success:false ,  message: "Error Creating Trip!"}
+        return { success: false, message: "Error Creating Trip!" }
       }
       
     } catch (err) {
@@ -75,8 +75,8 @@ const HomePage = () => {
 
   return (
     <>
-      {loading && <Loader/>}
-        <div className='h-auto py-10 px-10 md:px-12 mt-20 w-min-full flex flex-col gap-6 items-center justify-center'>
+      {loading ? <Loader/> : <>
+        < div className='h-auto py-10 px-10 md:px-12 mt-20 w-min-full flex flex-col gap-6 items-center justify-center'>
           <h1 className='text-3xl md:text-6xl font-bold text-center'>ALL TRIPS</h1>
           <button
             onClick={() => setShowForm(true)}
@@ -93,7 +93,7 @@ const HomePage = () => {
               onSubmit={handleFormSubmit}
             />
           )}
-        </div>
+        </div >
 
         <ToastContainer
           position="top-right"
@@ -108,6 +108,8 @@ const HomePage = () => {
           theme="colored"
           transition={Bounce}
           />
+        </>
+      }
     </>
   )
 }

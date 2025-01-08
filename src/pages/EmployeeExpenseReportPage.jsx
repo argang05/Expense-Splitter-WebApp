@@ -10,7 +10,7 @@ const EmployeeExpenseReportPage = () => {
     useEffect(() => {
         const getAllEmployeeExpenseReport = async () => {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/getExpenseReport/tripId/${tripId}`);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/get-expense-report/tripId/${tripId}`);
                 if (response.status === 200) {
                     setEmpExpenceReportList(response.data);
                 }
