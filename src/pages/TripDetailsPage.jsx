@@ -82,6 +82,15 @@ const TripDetailsPage = () => {
     }
   };
 
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp); // Convert the timestamp to a Date object
+    const day = String(date.getDate()).padStart(2, "0"); // Ensure 2 digits
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`; // Return in dd-mm-yyyy format
+  };
+
   const handleExchangeRateSubmit = async (e) => {
     e.preventDefault();
     // console.log("New Exchange Rate:", newExchangeRate);
@@ -142,6 +151,9 @@ const TripDetailsPage = () => {
           </h3>
           <h3 className="text-lg text-emerald-400 font-medium">
             Continent: {tripDetail?.continent}
+          </h3>
+          <h3 className="text-lg text-emerald-400 font-medium">
+            Trip Date: {tripDetail?.tripDate && formatDate(tripDetail.tripDate)}
           </h3>
           <h3 className="text-lg text-emerald-400 font-medium">
             Duration: {tripDetail?.numberOfDays} days

@@ -12,9 +12,10 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     continent: "",
     country: "",
     groupMembersIds: [],
+    tripDate:""
   });
 
-  const [tripDate, setTripDate] = useState({
+  const [tripDateLocal, setTripDateLocal] = useState({
         fromDate: "",
         toDate: "",
   })
@@ -61,8 +62,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
   };
 
   const calculateNumberOfDays = () => {
-    const fromDate = new Date(tripDate.fromDate);
-    const toDate = new Date(tripDate.toDate);
+    const fromDate = new Date(tripDateLocal.fromDate);
+    const toDate = new Date(tripDateLocal.toDate);
     if (fromDate && toDate && toDate >= fromDate) {
       return Math.ceil((toDate - fromDate) / (1000 * 60 * 60 * 24));
     }
@@ -98,7 +99,13 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
       alert("Please select a valid date range.");
       return;
     }
-    const finalData = { ...tripData, numberOfDays };
+    // Add tripDate directly into finalData
+    const finalData = {
+      ...tripData,
+      tripDate: tripDateLocal.fromDate,
+      numberOfDays,
+    };
+    // console.log("FinalData: ",finalData)
     onSubmit(finalData);
     onClose(); // Close the form after submission
   };
@@ -194,8 +201,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
           <input
             type="date"
             name="fromDate"
-            value={tripDate.fromDate}
-            onChange={(e) => setTripDate({ ...tripDate, fromDate: e.target.value })}
+            value={tripDateLocal.fromDate}
+            onChange={(e) => setTripDateLocal({ ...tripDateLocal, fromDate: e.target.value })}
             className="p-2 border rounded-md text-gray-400"
             required
           />
@@ -204,8 +211,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
           <input
             type="date"
             name="toDate"
-            value={tripDate.toDate}
-            onChange={(e) => setTripDate({ ...tripDate, toDate: e.target.value })}
+            value={tripDateLocal.toDate}
+            onChange={(e) => setTripDateLocal({ ...tripDateLocal, toDate: e.target.value })}
             className="p-2 border rounded-md text-gray-400"
             required
           />

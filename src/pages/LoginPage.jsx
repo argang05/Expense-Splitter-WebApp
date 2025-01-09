@@ -35,7 +35,22 @@ const LoginPage = () => {
         theme: "colored",
         transition: Bounce,
       });
-      navigate("/")
+      setTimeout(() => {
+        navigate("/")
+      },700)
+    } else {
+      setLoading(false)
+      toast.error("Incorrect Username Or Password!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
   }
 

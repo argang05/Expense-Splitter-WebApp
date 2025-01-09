@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import MainContainer from "./MainContainer";
+import RegisterPage from "./pages/RegisterPage";
 
 const App = () => {
 
@@ -11,7 +12,8 @@ const App = () => {
         <Route element={<PrivateRoutes />}>
           <Route path='*' element={<MainContainer/>} exact/>
         </Route>
-          <Route path="/login" element={<LoginPage />} exact/>
+        <Route path="/login" element={<LoginPage />} exact />
+        <Route path="/register" element={<RegisterPage/>} exact/>
         </Routes>
     </div>
   );
