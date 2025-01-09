@@ -32,6 +32,13 @@ public class EmployeeService {
         return encoder.matches(plainPassword,hashedPassword);
     }
 
+    public void saveAllEmployee(List<EmployeeEntity> allEmployeeEntity){
+        for(EmployeeEntity employee : allEmployeeEntity){
+            employee.setPassword(hashPassword(employee.getPassword()));
+        }
+        employeeRepository.saveAll(allEmployeeEntity);
+    }
+
 
     public void saveEmployee(EmployeeEntity employeeEntity){
         try{

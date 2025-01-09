@@ -49,22 +49,14 @@ public class EmployeeController {
     }
 
     @PostMapping("/signupList")
-    public ResponseEntity<?> registerEmployee(@RequestBody List<EmployeeEntity> employeeEntityList) {
+    public ResponseEntity<?> registerEmployeeList(@RequestBody List<EmployeeEntity> employeeEntityList) {
         try{
-            if (employeeEntityList != null && !employeeEntityList.isEmpty()) {
-                for (EmployeeEntity employeeEntity : employeeEntityList) {
-                    if (employeeEntity.getEmpId().isEmpty()) {
-                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                    }
-                    employeeService.saveEmployee(employeeEntity);
-                }
-                return new ResponseEntity<>(employeeEntityList, HttpStatus.CREATED);
-            }
+            employeeService.saveAllEmployee(employeeEntityList);
+            return new ResponseEntity<>(employeeEntityList,HttpStatus.CREATED);
         }catch (Exception e) {
             log.error("Exception Occurred while signing up user: ",e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
     }
 
     @PostMapping("/signin")
