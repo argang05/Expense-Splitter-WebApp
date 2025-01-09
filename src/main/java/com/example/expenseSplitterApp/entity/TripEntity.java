@@ -6,10 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Document(collection = "trips")
 @Data
@@ -35,6 +32,8 @@ public class TripEntity {
     private List<String> groupMembersIds;
 
     private Double exchangeRate;
+
+    private Date tripDate;
 
     private String currencySymbol;
 
