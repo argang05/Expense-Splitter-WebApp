@@ -2,6 +2,8 @@
 import React, { useContext, useState } from 'react';
 import { DataContext } from '../contexts/UserContext';
 import axios from 'axios'; // Ensure Axios is installed: npm install axios
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { NavLink } from 'react-router-dom';
 
 const EmployeeDetailPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false); // State to handle modal visibility
@@ -11,6 +13,8 @@ const EmployeeDetailPage = () => {
         password: '',
         empTier: '',
     });
+
+    const [btnLoading, setBtnLoading] = useState(false);
     const { user, setUser } = useContext(DataContext);
 
     const getPasswordHiddenSymbol = (len) => {
@@ -39,6 +43,7 @@ const EmployeeDetailPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            setBtnLoading(true)
             const response = await axios.put(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/update-emp-details/${user?.empId}`, {
                 empName: formData.empName,
                 email: formData.email,
@@ -50,6 +55,18 @@ const EmployeeDetailPage = () => {
 
             if (response.status === 201) {
                 // Update user state
+                setBtnLoading(false);
+                toast.success("User Details Updated Successfully!", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                });
                 setUser({
                     ...user,
                     empName: formData.empName,
@@ -60,13 +77,35 @@ const EmployeeDetailPage = () => {
                 setIsModalOpen(false); // Close modal
             }
         } catch (error) {
+            toast.error("Error Updating User Details!", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+            });
             console.error('Error updating employee details:', error);
         }
     };
 
     return (
-        <div className='w-full flex items-center justify-center'>
-            <div className='mt-40 m-5 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[80%] sm:w-[50%] h-[auto] rounded-lg'>
+        <div className='w-full flex flex-col items-center justify-center'>
+            <div className='mt-28 w-[80%] sm:w-[95%] mb-2 gap-1 flex items-center justify-start'>
+                <span className='text-sm font-semibold text-emerald-300 text-start'>
+                    <NavLink className="sm:text-md" to="/">
+                    <i className='bx bxs-home bx-flashing' />
+                    </NavLink>
+                </span>
+                <span className='text-sm font-semibold text-emerald-300 text-start'><i className='sm:text-lg bx bx-right-arrow-alt'></i></span>
+                <span className='text-sm font-semibold text-emerald-300 text-start'>  
+                    Employee Detail
+                </span>
+            </div>
+            <div className='m-5 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[80%] sm:w-[50%] h-[auto] rounded-lg'>
                 <h1 className='text-3xl font-bold text-emerald-300 text-center'>EMPLOYEE DETAILS:</h1>
                 <h3 className="text-lg text-emerald-200 font-medium">Employee ID: {user?.empId}</h3>
                 <h3 className="text-lg text-emerald-200 font-medium">Employee Name: {user?.empName}</h3>
@@ -84,7 +123,7 @@ const EmployeeDetailPage = () => {
             {/* Modal */}
             {isModalOpen && (
                 <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50'>
-                    <div className='bg-white w-[80%] sm:w-[50%] p-8 rounded-lg'>
+                    <div className='bg-white mt-28 max-h-[90vh] overflow-y-auto w-[80%] sm:w-[50%] p-8 rounded-lg'>
                         <h2 className='text-2xl text-emerald-500 font-bold text-center mb-4'>Update Employee Details</h2>
                         <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
                             <div className='flex flex-col gap-2'>
@@ -140,13 +179,26 @@ const EmployeeDetailPage = () => {
                                     Cancel
                                 </button>
                                 <button type='submit' className='px-4 py-2 bg-emerald-500 text-white rounded'>
-                                    Save Changes
+                                    {btnLoading ? "Loading..." :"Save Changes"}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          transition={Bounce}
+          />
         </div>
     );
 };

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import axios from "axios";
@@ -70,9 +70,9 @@ const RegisterPage = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 px-6 py-3">
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">
         <form
-          className="flex text-white flex-col gap-5 border-2 border-emerald-500 w-[80%] sm:w-[80%] p-6 rounded-lg shadow-md"
+          className="flex text-white flex-col gap-5 border-2 border-emerald-500 w-[80%] sm:w-[60%] p-6 rounded-lg shadow-md"
           onSubmit={handleSubmit}
         >
           <h2 className="text-2xl font-bold text-center ">Register</h2>
@@ -132,6 +132,7 @@ const RegisterPage = () => {
           >
             Register
           </button>
+          <span className='text-white text-center font-semibold text-md'>Already have an Account ? <NavLink to="/login" className="text-emerald-400">Login!</NavLink></span>
         </form>
       </div>
       <ToastContainer

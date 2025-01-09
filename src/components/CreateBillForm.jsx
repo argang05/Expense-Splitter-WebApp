@@ -384,6 +384,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               type="file"
               onChange={(e) => setImage(e.target.files[0])}
               className="p-2 border rounded-md text-gray-400"
+              required
             />
           </div>
 

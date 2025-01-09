@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react'
 import { DataContext } from '../contexts/UserContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate } from 'react-router-dom';
 import HomePage from './HomePage';
 import Loader from '../components/Loader';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
@@ -84,7 +84,8 @@ const LoginPage = () => {
                   value={userData.password}
                   onChange={(e) => {handleChange(e)}}          
                   />
-              <button className='bg-emerald-500 text-white font-bold rounded-lg p-2' type="submit">Login</button>
+          <button className='bg-emerald-500 text-white font-bold rounded-lg p-2' type="submit">Login</button>
+          <span className='text-white text-center font-semibold text-md'>Don&#39;t have an Account ? <NavLink to="/register" className="text-emerald-400">Register!</NavLink></span>
         </form>
       </div>
         <ToastContainer

@@ -135,8 +135,19 @@ const TripDetailsPage = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="container w-full flex items-center justify-center">
-        <div className="mb-8 mt-28 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg">
+      <div className="container w-full flex flex-col items-center justify-center">
+        <div className='mt-28 w-[90%] mb-4 gap-1 flex items-center justify-start'>
+          <span className='text-sm font-semibold text-emerald-300 text-start'>
+            <NavLink className="sm:text-md" to="/">
+              <i className='bx bxs-home bx-flashing' />
+            </NavLink>
+          </span>
+          <span className='text-sm font-semibold text-emerald-300 text-start'><i className='sm:text-lg bx bx-right-arrow-alt'></i></span>
+          <span className='text-sm font-semibold text-emerald-300 text-start'>  
+            Trip Details
+          </span>
+        </div>
+        <div className="mb-8 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg">
           <h1 className="text-3xl font-bold text-emerald-300">
             {tripDetail?.tripName.toUpperCase()}:
           </h1>
