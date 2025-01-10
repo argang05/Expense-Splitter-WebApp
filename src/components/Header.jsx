@@ -13,7 +13,7 @@ const Header = () => {
     }, [user]);
 
     return (
-        <header className="header-container w-full h-24 bg-emerald-800 flex items-center justify-between px-4 md:px-6 fixed">
+        <header className="header-container w-full h-24 bg-[#000249] flex items-center justify-between px-4 md:px-6 fixed">
             <NavLink to="/" className="header-title text-lg font-semibold text-white">
                 Hello, {employee?.empName}!! 👋
             </NavLink>

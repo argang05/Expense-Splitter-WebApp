@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
-import { NavLink, useParams } from 'react-router-dom';
+import { Navigate, NavLink, useNavigate, useParams } from 'react-router-dom';
 import TeamMemberDetail from '../components/TeamMemberDetail';
 import BillsShortComponent from '../components/BillsShortComponent';
 import { DataContext } from '../contexts/UserContext';
@@ -11,6 +11,7 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 
 const TripDetailsPage = () => {
   const { tripid } = useParams();
+  const navigate = useNavigate();
   const { user } = useContext(DataContext);
   const [employee, setEmployee] = useState(null);
   const [tripDetail, setTripDetail] = useState(null);
@@ -32,7 +33,7 @@ const TripDetailsPage = () => {
       }
     }
     getTripDetail();
-  }, [tripid, user,tripDetail,tripDetail?.exchangeRate]);
+  }, [tripid, user,tripDetail,tripDetail?.exchangeRate,tripDetail?.bills]);
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -49,7 +50,8 @@ const TripDetailsPage = () => {
 
       if (response.status === 201) {
         setLoading(false);
-        toast.success("Bill Created Successfully!", {
+        setTimeout(() => {
+          toast.success("Bill Created Successfully!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -60,9 +62,12 @@ const TripDetailsPage = () => {
           theme: "colored",
           transition: Bounce,
         });
+        },300)
+        
       } else {
         setLoading(false);
-        toast.error("Failed to create bill!", {
+        setTimeout(() => {
+          toast.error("Failed to create bill!", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -73,6 +78,8 @@ const TripDetailsPage = () => {
           theme: "colored",
           transition: Bounce,
         });
+        },300)
+        
       }
     } catch (err) {
       console.error(
@@ -137,55 +144,58 @@ const TripDetailsPage = () => {
       {loading && <Loader />}
       <div className="container w-full flex flex-col items-center justify-center">
         <div className='mt-28 w-[90%] mb-4 gap-1 flex items-center justify-start'>
-          <span className='text-sm font-semibold text-emerald-300 text-start'>
+          <span className='text-sm font-semibold text-[#000249] text-start'>
             <NavLink className="sm:text-md" to="/">
               <i className='bx bxs-home bx-flashing' />
             </NavLink>
           </span>
-          <span className='text-sm font-semibold text-emerald-300 text-start'><i className='sm:text-lg bx bx-right-arrow-alt'></i></span>
-          <span className='text-sm font-semibold text-emerald-300 text-start'>  
+          <span className='text-sm font-semibold text-[#000249] text-start'><i className='sm:text-lg bx bx-right-arrow-alt'></i></span>
+          <span className='text-sm font-semibold text-[#000249] text-start'>  
             Trip Details
           </span>
         </div>
-        <div className="mb-8 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg">
-          <h1 className="text-3xl font-bold text-emerald-300">
-            {tripDetail?.tripName.toUpperCase()}:
-          </h1>
-          <h3 className="text-lg text-emerald-400 font-medium">
+        <div className="mb-8 px-5 py-10 flex flex-col align-center gap-5 border-2 border-[#000249] w-[90%] h-[auto] rounded-lg">
+          <div className='flex items-center justify-between w-full'>
+            <h1 className="text-3xl font-bold text-[#000249]">
+              {tripDetail?.tripName.toUpperCase()}:
+            </h1>
+            <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-[#000249]"><i className='bx text-xl sm:text-3xl bx-refresh bx-tada text-center' ></i></button>
+          </div>
+          <h3 className="text-lg text-[#000249] font-medium">
             Type: {tripDetail?.tripType}
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Purpose: {tripDetail?.tripPurpose}
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Country: {tripDetail?.country}
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Continent: {tripDetail?.continent}
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Trip Date: {tripDetail?.tripDate && formatDate(tripDetail.tripDate)}
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Duration: {tripDetail?.numberOfDays} days
           </h3>
-          <h3 className="text-lg text-emerald-400 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Number Of Team Members: {tripDetail?.groupStrength}
           </h3>
           {employee?.empId === import.meta.env.VITE_ADMIN_EMPID && (
             <div className="flex items-center justify-items-start gap-1">
-              <h3 className="text-lg text-emerald-400 font-medium">
+              <h3 className="text-lg text-[#000249] font-medium">
                 Exchange Rate: {tripDetail?.exchangeRate}
               </h3>
               <button
                 className="edit-button"
                 onClick={() => setExchangeRateFormVisible(true)}
               >
-                <i className="bx bxs-edit-alt bx-tada text-white"></i>
+                <i className="bx bxs-edit-alt bx-tada text-[#F6490D]"></i>
               </button>
             </div>
           )}
-          <h3 className="text-xl text-emerald-400 font-semibold">
+          <h3 className="text-xl text-[#000249] font-semibold">
             Team Members:
           </h3>
           <div className="w-full flex flex-col gap-4 items-center justify-between">
@@ -198,19 +208,19 @@ const TripDetailsPage = () => {
               />
             ))}
           </div>
-          <h3 className="text-xl text-emerald-400 font-semibold">
+          <h3 className="text-xl text-[#000249] font-semibold">
             Bill Records:
           </h3>
           <div className="w-full h-auto flex justify-center">
             <button
-              className="scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-sky-600 rounded-2xl"
+              className="scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#000249] rounded-2xl"
               onClick={() => setShowForm(true)}
             >
               Add Bill
             </button>
           </div>
           {tripDetail?.bills.length <= 0 ? (
-            <div className="h-20 w-full py-6 px-5 bg-emerald-500 text-white rounded-lg flex items-center justify-between">
+            <div className="h-20 w-full py-6 px-5 bg-[#F6490D] text-white rounded-lg flex items-center justify-between">
               <h1 className="text-2xl font-bold">No Bill Records Found!</h1>
             </div>
           ) : (
@@ -226,7 +236,7 @@ const TripDetailsPage = () => {
           <div className="w-full h-auto flex justify-center">
             <NavLink
               to={`/trip/employee-expense-report/${tripDetail?.id}`}
-              className="scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-sky-600 rounded-2xl"
+              className="scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#000249] rounded-2xl"
             >
               Calculate Employee Expense Records
             </NavLink>

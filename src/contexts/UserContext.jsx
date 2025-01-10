@@ -29,18 +29,7 @@ const UserContext = ({ children }) => {
                 return response.data;
             }
         } catch (err) {
-            console.error("Trip Fetch Failed:", err.response ? err.response.data : err.message);
-        }
-    }
-
-    const getAllTrips = async (empId) => {
-        try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/all/empId/${empId}`);
-            if (response.status === 200) {
-                return response.data;
-            }
-        }catch (err) {
-            console.error("Trip Fetch Failed:", err.response ? err.response.data : err.message);
+            console.error("Employee Fetch Failed:", err.response ? err.response.data : err.message);
         }
     }
 
@@ -101,7 +90,7 @@ const UserContext = ({ children }) => {
     }, []);
 
     return (
-        <DataContext.Provider value={{ handleLogin, handleLogout, user, setUser, loggedIn , loading, getAllTrips , getEmployeeById , getAllEmployees}}>
+        <DataContext.Provider value={{ handleLogin, handleLogout, user, setUser, loggedIn , loading , getEmployeeById , getAllEmployees}}>
             {children}
         </DataContext.Provider>
     );

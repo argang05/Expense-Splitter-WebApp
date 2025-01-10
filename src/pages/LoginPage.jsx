@@ -66,26 +66,26 @@ const LoginPage = () => {
   return (
     <>
       {loading && <Loader/>}
-        <div className='main-container bg-slate-900 h-screen w-100 flex items-center justify-center'>
+        <div className='main-container bg-[#F3F3F3] h-screen w-100 flex items-center justify-center'>
           <form
-        className='flex flex-col align-center gap-5 border-2 border-emerald-500 w-[80%] sm:w-[40%] h-[auto] p-5 rounded-lg'
+        className='flex flex-col align-center bg-[#F6490D] gap-5 border-2 border-[#000249] w-[80%] sm:w-[40%] h-[auto] p-5 rounded-lg'
         onSubmit={(e) => { handleSubmit(e) }}
           >
               <h2 className='text-2xl font-bold self-center'>Sign In</h2>
               <label className='text-lg font-bold'>Employee ID:</label>
               <input
-                  className='bg-transparent border-2 border-emerald-500 rounded-xl p-2' type='text' name='empId' placeholder='Enter Employee ID...' required 
+                  className='bg-[#F3F3F3] text-[#000249] border-2 border-[#000249] rounded-xl p-2' type='text' name='empId' placeholder='Enter Employee ID...' required 
                   value={userData.empId}
                   onChange={(e) => {handleChange(e)}}
                   />
               <label className='text-lg font-bold'>Password:</label>
               <input
-                  className='bg-transparent border-2 border-emerald-500 rounded-xl p-2' type='password' name='password' placeholder='Enter Password...' required
+                  className='bg-[#F3F3F3] text-[#000249] border-2 border-[#000249] rounded-xl p-2' type='password' name='password' placeholder='Enter Password...' required
                   value={userData.password}
                   onChange={(e) => {handleChange(e)}}          
                   />
-          <button className='bg-emerald-500 text-white font-bold rounded-lg p-2' type="submit">Login</button>
-          <span className='text-white text-center font-semibold text-md'>Don&#39;t have an Account ? <NavLink to="/register" className="text-emerald-400">Register!</NavLink></span>
+          <button className='bg-[#000249] text-white font-bold rounded-lg p-2' type="submit">Login</button>
+          <span className='text-white text-center font-semibold text-md'>Don&#39;t have an Account ? <NavLink to="/register" className="text-[#000249]">Register!</NavLink></span>
         </form>
       </div>
         <ToastContainer

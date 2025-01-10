@@ -62,25 +62,32 @@ const HomePage = () => {
 
   const createTrip = async (tripData) => {
     try {
+      setLoading(true);
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/create-trip`,
         tripData
       );
 
       if (response.status === 201) {
-        toast.success("Trip Added Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setTrips((prevTrips) => [...prevTrips, tripData]);
-        setFilteredTrips((prevTrips) => [...prevTrips, tripData]);
+        const newTrip = response.data; // Get the newly created trip data from the response
+
+        setTimeout(() => {
+          toast.success("Trip Added Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        }, 300);
+
+        setTrips((prevTrips) => [...prevTrips, newTrip]); // Use newTrip instead of tripData
+        setFilteredTrips((prevTrips) => [...prevTrips, newTrip]); // Use newTrip instead of tripData
+        setLoading(false);
       } else {
         toast.error("Error Adding Trip", {
           position: "top-right",
@@ -98,6 +105,7 @@ const HomePage = () => {
       console.error("Error:", err.response ? err.response.data : err.message);
     }
   };
+
 
   const handleFormSubmit = (tripData) => {
     createTrip(tripData);
@@ -161,31 +169,31 @@ const HomePage = () => {
         <>
           <div className="h-auto py-10 px-10 md:px-12 mt-20 w-min-full flex flex-col gap-6 items-center justify-center">
             <div className="flex flex-row justify-between items-center w-full gap-2 sm:gap-0">
-              <h1 className="text-3xl md:text-5xl font-bold text-center">
+              <h1 className="text-3xl md:text-5xl text-[#000249] font-bold text-center">
                 ALL TRIPS
               </h1>
               <select
                 value={filter}
                 onChange={handleFilterChange}
-                className="p-1 sm:p-2 text-lg rounded-md border border-gray-300 bg-transparent shadow-md"
+                className="p-1 sm:p-2 text-lg rounded-md border border-[#000249] bg-[#000249] shadow-md"
               >
-                <option className="bg-black" value="all">All Trips</option>
-                <optgroup className="bg-black" label="Past">
-                  <option className="bg-black" value="past3">Past 3 Months</option>
-                  <option className="bg-black" value="past6">Past 6 Months</option>
-                  <option className="bg-black" value="past12">Past 1 Year</option>
+                <option className="bg-[#000249]" value="all">All Trips</option>
+                <optgroup className="bg-[#000249]" label="Past">
+                  <option className="bg-[#000249]" value="past3">Past 3 Months</option>
+                  <option className="bg-[#000249]" value="past6">Past 6 Months</option>
+                  <option className="bg-[#000249]" value="past12">Past 1 Year</option>
                 </optgroup>
-                <optgroup className="bg-black" label="Future">
-                  <option className="bg-black" value="future3">Next 3 Months</option>
-                  <option className="bg-black" value="future6">Next 6 Months</option>
-                  <option className="bg-black" value="future12">Next 1 Year</option>
+                <optgroup className="bg-[#000249]" label="Future">
+                  <option className="bg-[#000249]" value="future3">Next 3 Months</option>
+                  <option className="bg-[#000249]" value="future6">Next 6 Months</option>
+                  <option className="bg-[#000249]" value="future12">Next 1 Year</option>
                 </optgroup>
               </select>
             </div>
 
             <button
               onClick={() => setShowForm(true)}
-              className="scale-out h-auto w-full py-4 md:py-8 cursor-pointer px-5 md:px-20 text-xl md:text-4xl font-semibold bg-sky-600 rounded-2xl"
+              className="scale-out h-auto w-full py-4 md:py-8 cursor-pointer px-5 md:px-20 text-xl md:text-4xl font-semibold bg-[#000249] rounded-2xl"
             >
               Add Trip
             </button>

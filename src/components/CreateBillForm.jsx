@@ -24,23 +24,52 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   const [showContributionInputs, setShowContributionInputs] = useState(false);
   const [splitEquallyText, setSplitEquallyText] = useState("Yes");
   const [billSplitText, setBillSplitText] = useState("No");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); 
+
 
   useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/group-members/${tripId}`
-        );
-        if (response.status === 200) {
-          setEmployeeList(response.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch employees:", err.response ? err.response.data : err.message);
-      }
-    };
+      const fetchEmployees = async () => {
+        setLoading(true); // Start loading
+        setError(null); // Reset error state
 
-    fetchEmployees();
-  }, [tripGroupMembersIds, tripId]);
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/group-members/${tripId}`
+          );
+          if (response.status === 200) {
+            setEmployeeList(response.data); // Update employee list
+          }
+        } catch (err) {
+          console.error(
+            "Failed to fetch employees:",
+            err.response ? err.response.data : err.message
+          );
+          setError(err.message || "Failed to fetch employees");
+        } finally {
+          setLoading(false); // Stop loading
+        }
+      };
+
+      fetchEmployees();
+    }, [tripId]); // Trigger useEffect when tripId changes
+
+  const handleFormClose = () => {
+    setBillData({
+      billType: "",
+      billAmt: "",
+      billPayer: "",
+      contributorsIds: [],
+    });
+    setBillSplitText("No");
+    setSplitEquallyText("No");
+    setShowContributionInputs(false);
+    setSearchQuery("");
+    setShowDropdown(false);
+    setCustomContributions({});
+    onClose(); // Close the form/modal
+  };
+
 
   useEffect(() => {
     if (searchQuery?.trim() !== "") {
@@ -99,25 +128,71 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Set loading to true when validation begins
 
-    const formData = new FormData();
-
-    if (billSplitText === "Yes") {
+    if (splitEquallyText === "Yes") {
       setBillData(billData.splitBill = true)
-    } else {
-      setBillData(billData.splitBill = false)
     }
 
     if (splitEquallyText === "No") {
-      setBillData(billData.splitEqually = false);
-    } else {
-      setBillData(billData.splitEqually = true);
+      setBillData(billData.splitEqually = false)
     }
 
-    if (!billData.splitEqually) {
-      if (!validateContributions()) {
-        // alert("The sum of contributions must equal the bill amount.");
-        toast.error("The sum of contributions must equal the bill amount.", {
+    // Check if bill type is provided
+    if (!billData.billType.trim()) {
+      toast.error("Bill Type is required.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Check if bill amount is valid
+    if (!billData.billAmt || billData.billAmt <= 0) {
+      toast.error("Please enter a valid Bill Amount greater than 0.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      setLoading(false);
+      return;
+    }
+
+    // Check if split bill option is selected
+    if (billSplitText !== "Yes" && billSplitText !== "No") {
+      toast.error("Please select whether to split the bill.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      setLoading(false);
+      return;
+    }
+
+    // If splitting the bill, check further options
+    if (billSplitText === "Yes") {
+      if (splitEquallyText !== "Yes" && splitEquallyText !== "No") {
+        toast.error("Please select whether to split the bill equally.", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -127,32 +202,101 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           progress: undefined,
           theme: "colored",
           transition: Bounce,
-          });
+        });
+        setLoading(false);
         return;
       }
-      billData.contributerShare = customContributions;
+
+      if (splitEquallyText === "No") {
+        // Validate custom contributions
+        if (!validateContributions()) {
+          toast.error("The sum of contributions must equal the bill amount.", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+          setLoading(false);
+          return;
+        }
+        billData.contributerShare = customContributions;
+      }
+
+      // Check if contributors are selected
+      if (billData.contributorsIds.length === 0) {
+        toast.error("Please add at least one contributor.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setLoading(false);
+        return;
+      }
+
+      // Check if bill payer is selected
+      if (!billData.billPayer.trim()) {
+        toast.error("Please select a Bill Payer.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setLoading(false);
+        return;
+      }
     }
 
-    
+    // Check if image is uploaded
+    if (!image) {
+      toast.error("Please upload a Bill Image.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      setLoading(false);
+      return;
+    }
 
+    // If all validations pass
+    const formData = new FormData();
     formData.append("bill", JSON.stringify(billData));
-
-    if (image) {
-      formData.append("image", image);
-    }
+    formData.append("image", image);
 
     for (const [key, value] of formData.entries()) {
-      console.log(key, value);
+      console.log(`${key}: ${value}`);
     }
 
-    onBillFormSubmit(formData);
-    onClose();
+    onBillFormSubmit(formData); // Submit the form data
+    onClose(); // Close the form
+    setLoading(false); // Set loading to false after submission
   };
 
   return (
 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div className="mt-24 bg-white p-8 rounded-lg w-[90%] md:w-[70%] lg:w-[50%] max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-emerald-500 mb-5">Create Bill</h2>
+        <h2 className="text-2xl font-bold text-[#000249] mb-5">Create Bill</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
@@ -174,12 +318,38 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
             required
           />
 
+          <div className="flex items-center gap-2">
+            <label className="text-gray-400">Bill Payer:</label>
+            {loading ? (
+              <span className="text-gray-400">Loading employees...</span> // Show loading indicator
+            ) : error ? (
+              <span className="text-red-500">{error}</span> // Show error message
+            ) : (
+              employeeList.length > 0 && (
+                <select
+                  name="billPayer"
+                  className="p-2 border rounded-md text-black"
+                  required
+                  value={billData.billPayer}  
+                  onChange={handleInputChange}    
+                >
+                  <option value="">Select Payer</option>
+                  {employeeList.map((employee) => (
+                    <option key={employee.empId} value={employee.empId}>
+                      {employee.empName}
+                    </option>
+                  ))}
+                </select>
+              )
+            )}
+          </div>
+
           <div className="flex items-center gap-4">
             <label className="text-gray-400">Split Bill:</label>
             <input
               type="radio"
               name="splitBill"
-              value={"Yes"}
+              value="Yes"
               checked={billSplitText === "Yes"}
               onChange={(e) => setBillSplitText(e.target.value)}
             />
@@ -188,7 +358,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
             <input
               type="radio"
               name="splitBill"
-              value={"No"}
+              value="No"
               checked={billSplitText === "No"}
               onChange={(e) => setBillSplitText(e.target.value)}
             />
@@ -223,23 +393,6 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
 
           {(billSplitText === "Yes" && splitEquallyText === "No") ? (
             <>
-              <div>
-                <select
-                  name="billPayer"
-                  value={billData.billPayer}
-                  onChange={handleInputChange}
-                  className="p-2 border rounded-md text-black"
-                  required
-                >
-                  <option value="">Select Payer</option>
-                  {employeeList.map((employee) => (
-                    <option key={employee.empId} value={employee.empId}>
-                      {employee.empName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div className="relative">
                 <input
                   type="text"
@@ -311,23 +464,6 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           
           ) :(billSplitText === "Yes" && splitEquallyText === "Yes") && (
               <>
-             <div className="flex items-center gap-2">
-              <label className="text-gray-400">Bill Payer:</label>
-              <select
-                name="billPayer"
-                value={billData.billPayer}
-                onChange={handleInputChange}
-                className="p-2 border rounded-md text-black"
-                required
-              >
-                <option value="">Select Payer</option>
-                {employeeList.map((employee) => (
-                  <option key={employee.empId} value={employee.empId}>
-                    {employee.empName}
-                  </option>
-                ))}
-              </select>
-              </div>
             <div className="relative">
               <div className="flex items-center">
                 <input
@@ -376,8 +512,6 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               </>
           ) }
 
-          
-
           <div>
             <label className="text-gray-400">Upload Bill Image:</label>
             <input
@@ -392,9 +526,13 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
             <button type="button" onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded-md">
               Cancel
             </button>
-            <button type="submit" className="bg-emerald-500 text-white px-4 py-2 rounded-md">
-              Submit
-            </button>
+            <button
+                type="submit"
+                className="bg-emerald-500 text-white px-4 py-2 rounded-md"
+                disabled={loading} // Disable button while loading
+              >
+                {loading ? "Loading..." : "Submit"}
+              </button>
           </div>
         </form>
       </div>
@@ -408,7 +546,8 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           pauseOnFocusLoss
           draggable
           pauseOnHover
-          theme="colored"
+        theme="colored"
+        className="mt-28"
           transition={Bounce}
           />
     </div>

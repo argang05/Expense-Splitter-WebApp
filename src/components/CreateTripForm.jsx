@@ -1,9 +1,14 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import { DataContext } from "../contexts/UserContext";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 
 const CreateTripForm = ({ onClose, onSubmit }) => {
+
+  const { user } = useContext(DataContext);
+
   const [tripData, setTripData] = useState({
     tripName: "",
     tripType: "",
@@ -25,6 +30,7 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
 
   useEffect(() => {
     // Fetch all employees when the form loads
@@ -91,29 +97,131 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setBtnLoading(true)
+     // Validate required fields
+  const requiredFields = ["tripName", "tripType", "tripPurpose", "country", "continent"];
+  for (const field of requiredFields) {
+    if (!tripData[field]?.trim()) {
+      setBtnLoading(false)
+      toast.error(`${field.replace(/([A-Z])/g, " $1")} is required.`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+
+      return;
+    }
+  }
+
+  // Validate trip dates
+    if (!tripDateLocal.fromDate || !tripDateLocal.toDate) {
+    setBtnLoading(false)
+    toast.error("Both From Date and To Date are required.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    return;
+  }
+
+  const fromDate = new Date(tripDateLocal.fromDate);
+  const toDate = new Date(tripDateLocal.toDate);
+
+    if (toDate < fromDate) {
+    setBtnLoading(false)
+    toast.error("To Date cannot be earlier than From Date.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    return;
+  }
+
     if (isInternationalText === "No") {
       setTripData((prevData) => ({ ...prevData, isInternational: false }));
     }
     const numberOfDays = calculateNumberOfDays();
     if (numberOfDays <= 0) {
-      alert("Please select a valid date range.");
-      return;
+    setBtnLoading(false)
+    toast.error("Please select a valid date range.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    return;
     }
+    if (
+    !tripData.groupMembersIds.includes(user?.empId) &&
+    user?.empId !== import.meta.env.VITE_ADMIN_EMPID
+    ) {
+      setBtnLoading(false)
+    toast.error("You cannot add a trip where you are not included!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    return;
+  }
+
     // Add tripDate directly into finalData
     const finalData = {
       ...tripData,
       tripDate: tripDateLocal.fromDate,
       numberOfDays,
     };
+    setBtnLoading(false)
     // console.log("FinalData: ",finalData)
     onSubmit(finalData);
     onClose(); // Close the form after submission
+    // Provide success feedback
+    toast.success("Trip successfully added!", {
+      
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: false,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
   };
 
   return (
 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div className="mt-32 bg-white p-8 rounded-lg w-[90%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-emerald-500 mb-5">Add New Trip</h2>
+        <h2 className="text-2xl font-bold text-[#000249] mb-5">Add New Trip</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Trip Name */}
           <input
@@ -272,11 +380,25 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
               Cancel
             </button>
             <button type="submit" className="bg-emerald-500 text-white px-4 py-2 rounded-md">
-              Submit
+              {btnLoading ? "Loading..." : "Submit"}
             </button>
           </div>
         </form>
       </div>
+      <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+        transition={Bounce}
+        className="mt-20"
+          />
     </div>
   );
 };

@@ -23,19 +23,19 @@ const EmployeeExpenseReportPage = () => {
   return (
       <div className='w-full flex flex-col items-center justify-center'>
           <div className='mt-28 w-[90%] gap-1 mb-4 flex items-center justify-items-start'>
-              <span className='text-sm font-semibold text-emerald-300 text-start'>
+              <span className='text-sm font-semibold text-[#000249] text-start'>
                   <NavLink className="sm:text-md" to="/"><i className='bx bxs-home bx-flashing' ></i></NavLink>
                </span>
-              <span className='text-sm font-semibold text-emerald-300 text-start'>
+              <span className='text-sm font-semibold text-[#000249] text-start'>
                   <i className='sm:text-lg bx bx-right-arrow-alt'></i>
               </span>
-              <span className='text-sm font-semibold text-emerald-300 text-start'>
+              <span className='text-sm font-semibold text-[#000249] text-start'>
                   <NavLink to={`/trip/${tripId}`}>Trip Details</NavLink>
               </span>
-              <span className='text-sm font-semibold text-emerald-300 text-start'>
+              <span className='text-sm font-semibold text-[#000249] text-start'>
                   <i className='sm:text-lg bx bx-right-arrow-alt'></i>
               </span>
-              <span className='text-sm font-semibold text-emerald-300 text-start'> Employee Expense Report</span>
+              <span className='text-sm font-semibold text-[#000249] text-start'> Employee Expense Report</span>
           </div>
           <div className='flex flex-col items-center justify-center w-full'>
               {empExpenceReportList?.map((empExpenceReport) => (

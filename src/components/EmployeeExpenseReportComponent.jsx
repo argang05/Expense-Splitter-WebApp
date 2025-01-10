@@ -52,7 +52,7 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
 
   const renderDues = (dues) => {
     if (!dues || Object.keys(dues).length === 0) {
-      return <h3 className="text-lg text-emerald-200 font-medium">No dues</h3>;
+      return <h3 className="text-lg text-[#000249]  font-medium">No dues</h3>;
     }
 
     const duesEntries = Object.entries(dues);
@@ -64,7 +64,7 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
         // console.log(payeeNames);
         for (const [payeeEmpId, amount] of Object.entries(payees)) {
           renderedDues.push(
-            <h3 key={`${payerEmpId}-${payeeEmpId}`} className="text-lg text-emerald-200 font-medium">
+            <h3 key={`${payerEmpId}-${payeeEmpId}`} className="text-lg text-[#000249] font-medium">
               {empExpenceReport.empName} owes {amount} {empExpenceReport.currencySymbol} to Employee: {payeeNames[payeeEmpId] || `Loading (${payeeEmpId})`}
             </h3>
           );
@@ -73,7 +73,7 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
     }
 
     if (renderedDues.length === 0) {
-      return <h3 className="text-lg text-emerald-200 font-medium">No dues</h3>;
+      return <h3 className="text-lg text-[#000249] font-medium">No dues</h3>;
     }
 
     return renderedDues;
@@ -85,37 +85,37 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
       {loading ? (
         <ComponentLoader />
       ) : (
-        <div className="m-5 px-5 py-10 flex flex-col align-center gap-5 border-2 border-emerald-700 w-[90%] h-[auto] rounded-lg">
-          <h3 className="text-lg text-emerald-200 font-medium">
+        <div className="m-5 px-5 py-10 flex flex-col align-center gap-5 border-2 border-[#000249] w-[90%] h-[auto] rounded-lg">
+          <h3 className="text-lg text-[#000249] font-medium">
             Employee ID: {empExpenceReport?.empId}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Employee Name: {empExpenceReport?.empName}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Employee Email: {empExpenceReport?.email}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Employee Tier: {empExpenceReport?.empTier}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Total Food Bill: {empExpenceReport?.currencySymbol}{' '}
             {empExpenceReport?.totalFoodBill}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Total Per Diem Cost: {empExpenceReport?.currencySymbol}{' '}
             {empExpenceReport?.perDiemTotal}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Total Billable Limit: {empExpenceReport?.currencySymbol}{' '}
             {empExpenceReport?.billableLimitTotal}
           </h3>
-          <h3 className="text-lg text-emerald-200 font-medium">
+          <h3 className="text-lg text-[#000249] font-medium">
             Total Remaining Balance: {empExpenceReport?.currencySymbol}{' '}
             {empExpenceReport?.remainingBalanceTotal}
           </h3>
           <div>
-            <h3 className="text-lg text-emerald-300 font-semibold">Dues Record:</h3>
+            <h3 className="text-lg text-[#000249] font-semibold">Dues Record:</h3>
             {renderDues(empExpenceReport?.dues)}
           </div>
         </div>
