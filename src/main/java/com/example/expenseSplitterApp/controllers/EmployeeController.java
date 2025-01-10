@@ -209,7 +209,6 @@ public class EmployeeController {
         }
     }
 
-
     @GetMapping("/empId-with-pass/{empId}")
     public ResponseEntity<?> getBasicEmployeeByIdWithPassword(@PathVariable String empId){
         try{

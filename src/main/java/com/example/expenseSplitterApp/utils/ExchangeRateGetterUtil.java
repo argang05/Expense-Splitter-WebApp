@@ -25,75 +25,61 @@ public class ExchangeRateGetterUtil {
     private static final Map<String, String> countryCurrencyMap = new HashMap<>();
 
     static {
-           // Major countries with widely used currencies
-           countryCurrencyMap.put("United States", "USD"); // US Dollar
-           countryCurrencyMap.put("Eurozone", "EUR"); // Euro
-           countryCurrencyMap.put("United Kingdom", "GBP"); // British Pound
-           countryCurrencyMap.put("Japan", "JPY"); // Japanese Yen
-           countryCurrencyMap.put("India", "INR"); // Indian Rupee
-           countryCurrencyMap.put("Canada", "CAD"); // Canadian Dollar
-           countryCurrencyMap.put("Australia", "AUD"); // Australian Dollar
-           countryCurrencyMap.put("China", "CNY"); // Chinese Yuan
-           countryCurrencyMap.put("Switzerland", "CHF"); // Swiss Franc
-           countryCurrencyMap.put("South Korea", "KRW"); // South Korean Won
-           countryCurrencyMap.put("Russia", "RUB"); // Russian Ruble
-           countryCurrencyMap.put("Brazil", "BRL"); // Brazilian Real
-           countryCurrencyMap.put("South Africa", "ZAR"); // South African Rand
-           countryCurrencyMap.put("Mexico", "MXN"); // Mexican Peso
-           countryCurrencyMap.put("Turkey", "TRY"); // Turkish Lira
-           countryCurrencyMap.put("Saudi Arabia", "SAR"); // Saudi Riyal
-           countryCurrencyMap.put("United Arab Emirates", "AED"); // UAE Dirham
-           countryCurrencyMap.put("Singapore", "SGD"); // Singapore Dollar
-           countryCurrencyMap.put("Hong Kong", "HKD"); // Hong Kong Dollar
-           countryCurrencyMap.put("New Zealand", "NZD"); // New Zealand Dollar
-           countryCurrencyMap.put("Norway", "NOK"); // Norwegian Krone
-           countryCurrencyMap.put("Sweden", "SEK"); // Swedish Krona
-           countryCurrencyMap.put("Denmark", "DKK"); // Danish Krone
-           countryCurrencyMap.put("Thailand", "THB"); // Thai Baht
-           countryCurrencyMap.put("Malaysia", "MYR"); // Malaysian Ringgit
-           countryCurrencyMap.put("Indonesia", "IDR"); // Indonesian Rupiah
-           countryCurrencyMap.put("Vietnam", "VND"); // Vietnamese Dong
-           countryCurrencyMap.put("Philippines", "PHP"); // Philippine Peso
-           countryCurrencyMap.put("Pakistan", "PKR"); // Pakistani Rupee
-           countryCurrencyMap.put("Bangladesh", "BDT"); // Bangladeshi Taka
-           countryCurrencyMap.put("Egypt", "EGP"); // Egyptian Pound
-           countryCurrencyMap.put("Argentina", "ARS"); // Argentine Peso
-           countryCurrencyMap.put("Chile", "CLP"); // Chilean Peso
-           countryCurrencyMap.put("Colombia", "COP"); // Colombian Peso
-           countryCurrencyMap.put("Nigeria", "NGN"); // Nigerian Naira
-           countryCurrencyMap.put("Kenya", "KES"); // Kenyan Shilling
-           countryCurrencyMap.put("Ghana", "GHS"); // Ghanaian Cedi
-           countryCurrencyMap.put("Israel", "ILS"); // Israeli New Shekel
-           countryCurrencyMap.put("Czech Republic", "CZK"); // Czech Koruna
-           countryCurrencyMap.put("Poland", "PLN"); // Polish Zloty
-           countryCurrencyMap.put("Hungary", "HUF"); // Hungarian Forint
-           countryCurrencyMap.put("Romania", "RON"); // Romanian Leu
-           countryCurrencyMap.put("Ukraine", "UAH"); // Ukrainian Hryvnia
-           countryCurrencyMap.put("Kazakhstan", "KZT"); // Kazakhstani Tenge
-           countryCurrencyMap.put("Iraq", "IQD"); // Iraqi Dinar
-           countryCurrencyMap.put("Iran", "IRR"); // Iranian Rial
-           countryCurrencyMap.put("Qatar", "QAR"); // Qatari Riyal
-           countryCurrencyMap.put("Kuwait", "KWD"); // Kuwaiti Dinar
-           countryCurrencyMap.put("Bahrain", "BHD"); // Bahraini Dinar
-           countryCurrencyMap.put("Oman", "OMR"); // Omani Rial
-        countryCurrencyMap.put("Germany", "EUR"); // Omani Rial
+        countryCurrencyMap.put("Austria", "EUR"); // Euro
+        countryCurrencyMap.put("Belgium", "EUR"); // Euro
+        countryCurrencyMap.put("Cyprus", "EUR"); // Euro
+        countryCurrencyMap.put("Estonia", "EUR"); // Euro
+        countryCurrencyMap.put("Finland", "EUR"); // Euro
+        countryCurrencyMap.put("France", "EUR"); // Euro
+        countryCurrencyMap.put("Germany", "EUR"); // Euro
+        countryCurrencyMap.put("Greece", "EUR"); // Euro
+        countryCurrencyMap.put("Ireland", "EUR"); // Euro
+        countryCurrencyMap.put("Italy", "EUR"); // Euro
+        countryCurrencyMap.put("Latvia", "EUR"); // Euro
+        countryCurrencyMap.put("Lithuania", "EUR"); // Euro
+        countryCurrencyMap.put("Luxembourg", "EUR"); // Euro
+        countryCurrencyMap.put("Malta", "EUR"); // Euro
+        countryCurrencyMap.put("Netherlands", "EUR"); // Euro
+        countryCurrencyMap.put("Portugal", "EUR"); // Euro
+        countryCurrencyMap.put("Slovakia", "EUR"); // Euro
+        countryCurrencyMap.put("Slovenia", "EUR"); // Euro
+        countryCurrencyMap.put("Spain", "EUR"); // Euro
 
-           // Small but globally recognized currencies
-           countryCurrencyMap.put("Iceland", "ISK"); // Icelandic Krona
-           countryCurrencyMap.put("Georgia", "GEL"); // Georgian Lari
-           countryCurrencyMap.put("Azerbaijan", "AZN"); // Azerbaijani Manat
-           countryCurrencyMap.put("Armenia", "AMD"); // Armenian Dram
-           countryCurrencyMap.put("Uzbekistan", "UZS"); // Uzbekistani Som
-           countryCurrencyMap.put("Turkmenistan", "TMT"); // Turkmenistani Manat
-           countryCurrencyMap.put("Kyrgyzstan", "KGS"); // Kyrgyzstani Som
-           countryCurrencyMap.put("Sri Lanka", "LKR"); // Sri Lankan Rupee
-           countryCurrencyMap.put("Nepal", "NPR"); // Nepalese Rupee
-           countryCurrencyMap.put("Bhutan", "BTN"); // Bhutanese Ngultrum
-           countryCurrencyMap.put("Afghanistan", "AFN"); // Afghan Afghani
-           countryCurrencyMap.put("Zimbabwe", "ZWL"); // Zimbabwean Dollar
-           countryCurrencyMap.put("Myanmar", "MMK"); // Burmese Kyat
-           countryCurrencyMap.put("Cambodia", "KHR"); // Cambodian Riel
+        // Rest of the countries with their respective currencies
+        countryCurrencyMap.put("United States", "USD"); // US Dollar
+        countryCurrencyMap.put("Japan", "JPY"); // Japanese Yen
+        countryCurrencyMap.put("Bulgaria", "BGN"); // Bulgarian Lev
+        countryCurrencyMap.put("Czech Republic", "CZK"); // Czech Republic Koruna
+        countryCurrencyMap.put("Denmark", "DKK"); // Danish Krone
+        countryCurrencyMap.put("United Kingdom", "GBP"); // British Pound Sterling
+        countryCurrencyMap.put("Hungary", "HUF"); // Hungarian Forint
+        countryCurrencyMap.put("Poland", "PLN"); // Polish Zloty
+        countryCurrencyMap.put("Romania", "RON"); // Romanian Leu
+        countryCurrencyMap.put("Sweden", "SEK"); // Swedish Krona
+        countryCurrencyMap.put("Switzerland", "CHF"); // Swiss Franc
+        countryCurrencyMap.put("Iceland", "ISK"); // Icelandic Krona
+        countryCurrencyMap.put("Norway", "NOK"); // Norwegian Krone
+        countryCurrencyMap.put("Croatia", "HRK"); // Croatian Kuna
+        countryCurrencyMap.put("Russia", "RUB"); // Russian Ruble
+        countryCurrencyMap.put("Turkey", "TRY"); // Turkish Lira
+        countryCurrencyMap.put("Australia", "AUD"); // Australian Dollar
+        countryCurrencyMap.put("Brazil", "BRL"); // Brazilian Real
+        countryCurrencyMap.put("Canada", "CAD"); // Canadian Dollar
+        countryCurrencyMap.put("China", "CNY"); // Chinese Yuan
+        countryCurrencyMap.put("Hong Kong", "HKD"); // Hong Kong Dollar
+        countryCurrencyMap.put("Indonesia", "IDR"); // Indonesian Rupiah
+        countryCurrencyMap.put("Israel", "ILS"); // Israeli New Sheqel
+        countryCurrencyMap.put("India", "INR"); // Indian Rupee
+        countryCurrencyMap.put("South Korea", "KRW"); // South Korean Won
+        countryCurrencyMap.put("Mexico", "MXN"); // Mexican Peso
+        countryCurrencyMap.put("Malaysia", "MYR"); // Malaysian Ringgit
+        countryCurrencyMap.put("New Zealand", "NZD"); // New Zealand Dollar
+        countryCurrencyMap.put("Philippines", "PHP"); // Philippine Peso
+        countryCurrencyMap.put("Singapore", "SGD"); // Singapore Dollar
+        countryCurrencyMap.put("Thailand", "THB"); // Thai Baht
+        countryCurrencyMap.put("South Africa", "ZAR"); // South African Rand
     }
+
     public String getCurrencySymbolByCountryName(String countryName){
         if(!countryCurrencyMap.get(countryName).equals("")){
             return countryCurrencyMap.get(countryName);
@@ -102,6 +88,9 @@ public class ExchangeRateGetterUtil {
     }
     public double getExchangeRate (String countryName){
         String currencySymbol = countryCurrencyMap.getOrDefault(countryName, "USD");
+        if(currencySymbol.equalsIgnoreCase("")){
+            return 1.0;
+        }
         String finalAPIURL = API_URL.replace("API_KEY",apiKey).replace("CURRENCY_SYMBOL",currencySymbol);
 
         ResponseEntity<ExchangeRateResponse> response = restTemplate.exchange(finalAPIURL, HttpMethod.GET,null, ExchangeRateResponse.class);

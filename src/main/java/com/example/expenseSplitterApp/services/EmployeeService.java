@@ -71,7 +71,12 @@ public class EmployeeService {
         if(employeeEntity != null){
             employeeEntity.setEmpName(employee.getEmpName());
             employeeEntity.setEmail(employee.getEmail());
-            employeeEntity.setPassword(hashPassword(employee.getPassword()));
+            if(employeeEntity.getPassword().equalsIgnoreCase(employee.getPassword())
+                            || (matchPassword(employee.getPassword() , employeeEntity.getPassword()))){
+                employeeEntity.setPassword(employee.getPassword());
+            }else{
+                employeeEntity.setPassword(hashPassword(employee.getPassword()));
+            }
             employeeEntity.setEmpTier(employee.getEmpTier());
             employeeRepository.save(employeeEntity);
         }
