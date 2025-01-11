@@ -74,7 +74,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   useEffect(() => {
     if (searchQuery?.trim() !== "") {
       const filtered = employeeList.filter((employee) =>
-        employee.empName.toLowerCase().includes(searchQuery?.toLowerCase())
+        employee.empName.toLowerCase()?.includes(searchQuery?.toLowerCase())
       );
       setFilteredEmployees(filtered);
     } else {
@@ -91,7 +91,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   };
 
   const handleAddContributor = (employeeId) => {
-    if (!billData.contributorsIds.includes(employeeId)) {
+    if (!billData.contributorsIds?.includes(employeeId)) {
       setBillData((prevData) => ({
         ...prevData,
         contributorsIds: [...prevData.contributorsIds, employeeId],
@@ -105,7 +105,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   const handleRemoveContributor = (employeeId) => {
     setBillData((prevData) => ({
       ...prevData,
-      contributorsIds: prevData.contributorsIds.filter((id) => id !== employeeId),
+      contributorsIds: prevData.contributorsIds?.filter((id) => id !== employeeId),
     }));
     setCustomContributions((prev) => {
       const newContributions = { ...prev };
@@ -424,7 +424,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {billData.contributorsIds.map((id) => (
+                {billData.contributorsIds?.map((id) => (
                   <div key={id} className="flex items-center gap-2 bg-emerald-500 px-2 py-1 rounded-md">
                     <span>{employeeList.find((emp) => emp.empId === id)?.empName || id}</span>
                     <button
@@ -446,7 +446,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               </button>
               {showContributionInputs && (
             <div>
-              {billData.contributorsIds.map((id) => (
+              {billData.contributorsIds?.map((id) => (
                 <div key={id} className="flex items-center gap-4 mb-2">
                   <label className="text-gray-400">{employeeList.find((emp) => emp.empId === id)?.empName}:</label>
                   <input
@@ -496,7 +496,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               )}
             </div>  
               <div className="flex flex-wrap gap-2">
-              {billData?.contributorsIds.map((id) => (
+              {billData?.contributorsIds?.map((id) => (
                 <div key={id} className="flex items-center gap-2 bg-emerald-500 px-2 py-1 rounded-md">
                   <span>{employeeList.find((emp) => emp.empId === id)?.empName || id}</span>
                   <button

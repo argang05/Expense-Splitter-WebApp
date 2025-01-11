@@ -72,3 +72,15 @@ img {
         padding: 0 10px; /* Add padding to fit within viewport */
     }
 }
+
+.blue-btn:hover{
+  background-color: #000480;
+}
+
+.orange-btn:hover{
+  background-color: #ef6233;
+}
+
+.logout-button:hover{
+  background-color: #ca4040;
+}

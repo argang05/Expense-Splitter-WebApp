@@ -61,11 +61,8 @@ const TripDetailsPage = () => {
       );
 
       if (response.status === 201) {
-        setLoading(false);
-        
-        
         navigate(0);
-        
+        setLoading(false);
         toast.success("Bill Created Successfully!", {
             position: "top-right",
             autoClose: 5000,
@@ -179,12 +176,12 @@ const TripDetailsPage = () => {
             Trip Details
           </span>
         </div>
-        <div className="mb-8 px-5 py-10 flex flex-col align-center gap-5 border-2 border-[#000249] w-[90%] h-[auto] rounded-lg">
+        <div className="mb-8 px-5 py-10 flex flex-col align-center gap-5 border-2 border-[#111111] w-[90%] h-[auto] rounded-lg">
           <div className='flex items-center justify-between w-full'>
             <h1 className="text-3xl font-bold text-[#000249]">
               {tripDetail?.tripName.toUpperCase()}:
             </h1>
-            <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-[#000249]"><i className='bx text-xl sm:text-3xl bx-refresh bx-tada text-center' ></i></button>
+            <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-transparent"><i className='bx text-3xl sm:text-3xl text-[#000249] bx-refresh bx-tada text-center' ></i></button>
           </div>
           <h3 className="text-lg text-[#000249] font-medium">
             Type: {tripDetail?.tripType}
@@ -238,14 +235,14 @@ const TripDetailsPage = () => {
           </h3>
           <div className="w-full h-auto flex justify-center">
             <button
-              className="scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#000249] rounded-2xl"
+              className="orange-btn scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#F6490D] rounded-2xl"
               onClick={() => setShowForm(true)}
             >
               Add Bill
             </button>
           </div>
           {tripDetail?.bills.length <= 0 ? (
-            <div className="h-20 w-full py-6 px-5 bg-[#F6490D] text-white rounded-lg flex items-center justify-between">
+            <div className="h-20 w-full py-6 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between">
               <h1 className="text-2xl font-bold">No Bill Records Found!</h1>
             </div>
           ) : (
@@ -261,7 +258,7 @@ const TripDetailsPage = () => {
           <div className="w-full h-auto flex justify-center">
             <NavLink
               to={`/trip/employee-expense-report/${tripDetail?.id}`}
-              className="scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#000249] rounded-2xl"
+              className="orange-btn scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#F6490D] rounded-2xl"
             >
               Calculate Employee Expense Records
             </NavLink>

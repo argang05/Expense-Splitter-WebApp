@@ -42,7 +42,7 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
   <>
     {loading ?<ComponentLoader/> 
         :
-        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#F6490D] text-white rounded-lg flex items-center justify-between">
+        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between">
             <div className="h-64 sm:h-72 flex flex-col items-start justify-center gap-4">
             <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
             <h2 className="text-sm sm:text-lg font-medium">
@@ -61,9 +61,9 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
             )}
             </div>
             <div className="sm:h-64 h-72">
-              <a href={bill?.imageUrl} target="_blank" >
-                <img className="w-auto sm:w-52 h-full border-[1.5px] border-[#000249] rounded-lg" src={bill?.imageUrl} alt="food-bill"/>
-              </a>
+              {(bill?.imageUrl === "") ? <h2 className='text-sm sm:text-lg font-medium text-[#03abff]'>No Bill Image</h2>  : <a href={bill?.imageUrl} target="_blank" >
+                <img className="w-auto sm:w-52 h-full border-[3px] border-[#03abff] rounded-lg" src={bill?.imageUrl} alt="food-bill"/>
+              </a>}
             </div>
         </div>}
       </>

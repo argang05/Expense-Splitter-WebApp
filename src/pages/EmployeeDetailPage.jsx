@@ -118,16 +118,16 @@ const EmployeeDetailPage = () => {
                 </span>
             </div>
             <div className="m-5 px-5 py-10 flex flex-col align-center gap-5 border-2 border-[#000249] w-[80%] sm:w-[50%] h-[auto] rounded-lg">
-                <h1 className="text-3xl font-bold text-[#000249] text-center">EMPLOYEE DETAILS:</h1>
-                <h3 className="text-lg text-[#000249] font-medium">Employee ID: {user?.empId}</h3>
-                <h3 className="text-lg text-[#000249] font-medium">Employee Name: {user?.empName}</h3>
-                <h3 className="text-lg text-[#000249] font-medium">Employee Email: {user?.email}</h3>
-                <h3 className="text-lg text-[#000249] font-medium">Employee Tier: {user?.empTier}</h3>
-                <h3 className="text-lg text-[#000249] font-medium">
+                <h1 className="text-2xl sm:text-3xl font-bold text-[#000249] text-center">EMPLOYEE DETAILS:</h1>
+                <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee ID: {user?.empId}</h3>
+                <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee Name: {user?.empName}</h3>
+                <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee Email: {user?.email}</h3>
+                <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee Tier: {user?.empTier}</h3>
+                <h3 className="text-md sm:text-lg text-[#000249] font-medium">
                     Employee Password: {user?.password ? (user.password.length > 8 ? user.password.substring(0, 8)+'...' : user.password) : 'admin123'}
                 </h3>
                 <button
-                    className="scale-out h-[auto] w-full py-2 sm:py-4 cursor-pointer px-10 text-xl sm:text-2xl font-semibold bg-[#F6490D] rounded-2xl"
+                    className="orange-btn scale-out h-[auto] w-full py-3 sm:py-4 cursor-pointer px-8 sm:px-10 text-lg sm:text-2xl font-semibold bg-[#F6490D] rounded-2xl"
                     onClick={openModal}
                 >
                     Update Employee Details

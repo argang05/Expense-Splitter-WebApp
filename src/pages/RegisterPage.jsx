@@ -70,15 +70,15 @@ const RegisterPage = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="min-h-screen flex items-center justify-center bg-[#F3F3F3] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#111111] p-6">
         <form
-          className="flex bg-[#F6490D] text-white flex-col gap-5 border-2 border-[#000249] w-[80%] sm:w-[60%] p-6 rounded-lg shadow-md"
+          className="flex bg-[#000249] text-white flex-col gap-5 border-2 border-[#03abff] w-[80%] sm:w-[60%] p-6 rounded-lg shadow-md"
           onSubmit={handleSubmit}
         >
           <h2 className="text-2xl font-bold text-center ">Register</h2>
           <label className="text-lg font-semibold ">Employee ID:</label>
           <input
-            className="bg-[#F3F3F3] h-10 border border-[#000249] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-[#F3F3F3] h-10 border-2 border-[#03abff] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             type="text"
             name="empId"
             placeholder="Enter Employee ID..."
@@ -88,7 +88,7 @@ const RegisterPage = () => {
           />
           <label className="text-lg font-semibold">Password:</label>
           <input
-            className="bg-[#F3F3F3] h-10 border border-[#000249] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-[#F3F3F3] h-10 border-2 border-[#03abff] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             type="password"
             name="password"
             placeholder="Enter Password..."
@@ -98,7 +98,7 @@ const RegisterPage = () => {
           />
           <label className="text-lg font-semibold">Employee Name:</label>
           <input
-            className="bg-[#F3F3F3] h-10 border border-[#000249] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-[#F3F3F3] h-10 border-2 border-[#03abff] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             type="text"
             name="empName"
             placeholder="Enter Employee Name..."
@@ -108,7 +108,7 @@ const RegisterPage = () => {
           />
           <label className="text-lg font-semibold">Employee Email:</label>
           <input
-            className="bg-[#F3F3F3] h-10 border border-[#000249] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-[#F3F3F3] h-10 border-2 border-[#03abff] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             type="email"
             name="email"
             placeholder="Enter Employee Email..."
@@ -118,7 +118,7 @@ const RegisterPage = () => {
           />
           <label className="text-lg font-semibold">Employee Tier:</label>
           <input
-            className="bg-[#F3F3F3] h-10 border border-[#000249] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="bg-[#F3F3F3] h-10 border-2 border-[#03abff] text-[#000249] rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
             type="text"
             name="empTier"
             placeholder="Enter Employee Tier..."
@@ -127,12 +127,12 @@ const RegisterPage = () => {
             onChange={handleChange}
           />
           <button
-            className="bg-[#000249] text-white font-bold h-10 rounded-lg hover:bg-emerald-600 transition-all"
+            className="bg-[#F6490D] text-white font-bold h-10 rounded-lg hover:bg-[#ef6233] transition-all"
             type="submit"
           >
             Register
           </button>
-          <span className='text-white text-center font-semibold text-md'>Already have an Account ? <NavLink to="/login" className="text-[#000249]">Login!</NavLink></span>
+          <span className='text-white text-center font-semibold text-md'>Already have an Account ? <NavLink to="/login" className="text-[#F6490D]">Login!</NavLink></span>
         </form>
       </div>
       <ToastContainer

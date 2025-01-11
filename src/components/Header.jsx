@@ -13,7 +13,7 @@ const Header = () => {
     }, [user]);
 
     return (
-        <header className="header-container w-full h-24 bg-[#000249] flex items-center justify-between px-4 md:px-6 fixed">
+        <header className="header-container w-full h-24 bg-[#111111] flex items-center justify-between px-4 md:px-6 fixed">
             <NavLink to="/" className="header-title text-lg font-semibold text-white">
                 Hello, {employee?.empName}!! 👋
             </NavLink>
@@ -21,7 +21,7 @@ const Header = () => {
                 <NavLink to="/employee-detail" className="user-icon text-3xl bx bxs-user bx-tada"></NavLink>
                 <button
                     onClick={handleLogout}
-                    className="logout-button px-3 py-2 bg-red-600 font-bold text-white rounded-lg"
+                    className="logout-button scale-out px-3 py-2 bg-red-600 font-bold text-white rounded-lg"
                 >
                     Logout
                 </button>
