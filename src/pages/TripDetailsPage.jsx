@@ -33,7 +33,19 @@ const TripDetailsPage = () => {
       }
     }
     getTripDetail();
-  }, [tripid, user,tripDetail,tripDetail?.exchangeRate,tripDetail?.bills]);
+  }, [tripid, user, tripDetail, tripDetail?.exchangeRate]);
+
+  //   async function fetchData() {
+  //     const response = await axios.get(
+  //       `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/id/${tripid}`
+  //     );
+  //     if (response.status === 200) {
+  //       setTripDetail(response.data);
+  //       setLoading(false);
+  //     }
+  //   }
+  //   fetchData();
+  // }, [tripid, tripDetail?.bills]);
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -50,44 +62,57 @@ const TripDetailsPage = () => {
 
       if (response.status === 201) {
         setLoading(false);
-        setTimeout(() => {
-          toast.success("Bill Created Successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        },300)
         
+        
+        navigate(0);
+        
+        toast.success("Bill Created Successfully!", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
       } else {
         setLoading(false);
         setTimeout(() => {
           toast.error("Failed to create bill!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        },300)
-        
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        }, 500);
       }
     } catch (err) {
+      setLoading(false);
       console.error(
         "Failed to create bill:",
         err.response ? err.response.data : err.message
       );
+      toast.error("An error occurred while creating the bill!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
     }
   };
+
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp); // Convert the timestamp to a Date object
@@ -287,7 +312,6 @@ const TripDetailsPage = () => {
             </div>
           </div>
         )}
-      </div>
       <ToastContainer
         position="top-right"
         autoClose={5000}
@@ -299,8 +323,10 @@ const TripDetailsPage = () => {
         draggable
         pauseOnHover
         theme="colored"
+        className="mt-28"
         transition={Bounce}
       />
+      </div>
     </>
   );
 };

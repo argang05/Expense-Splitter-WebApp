@@ -130,7 +130,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     e.preventDefault();
     setLoading(true); // Set loading to true when validation begins
 
-    if (splitEquallyText === "Yes") {
+    if (billSplitText === "Yes") {
       setBillData(billData.splitBill = true)
     }
 
@@ -284,9 +284,9 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     formData.append("bill", JSON.stringify(billData));
     formData.append("image", image);
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
 
     onBillFormSubmit(formData); // Submit the form data
     onClose(); // Close the form
