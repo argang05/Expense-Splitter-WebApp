@@ -219,7 +219,6 @@ public class BillService {
         if(trip != null && bill != null){
             trip.getBills().add(bill);
             tripRepository.save(trip);
-            billRepository.save(bill);
         }
         return bill;
     }
