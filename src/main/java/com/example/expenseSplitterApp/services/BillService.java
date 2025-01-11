@@ -59,70 +59,85 @@ public class BillService {
         }
     }
 
-    public BillsEntity createBillSplitEqual(BillsEntity bill,ObjectId tripId){
+    public BillsEntity createBillSplitEqual(BillsEntity bill, ObjectId tripId) {
         bill.setTripId(tripId);
         bill.setNumberOfContributors(bill.getContributorsIds().toArray().length);
         TripEntity trip = tripService.getTripById(bill.getTripId());
-        if(bill.getSplitBill()){
-            Double perShareCost = Math.round(bill.getBillAmt()/bill.getNumberOfContributors() *100.0) /100.0;
+
+        if (bill.getSplitBill()) {
+            // Calculate per person share
+            Double perShareCost = Math.round(bill.getBillAmt() / bill.getNumberOfContributors() * 100.0) / 100.0;
             bill.setPerPersonShare(perShareCost);
-            // Populate the contributerShare map
+
             if (bill.getContributorsIds() != null && !bill.getContributorsIds().isEmpty()) {
+                // Create contributor share map
                 Map<String, Double> contributorShareMap = new HashMap<>();
                 for (String contributorId : bill.getContributorsIds()) {
                     contributorShareMap.put(contributorId, perShareCost);
                 }
                 bill.setContributerShare(contributorShareMap);
+
                 // Fetch all employees with matching empIds
                 List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(bill.getContributorsIds());
-
                 billRepository.save(bill);
 
-                // Update each employee's bills list and save
+                // Update each contributor's bills and dues
                 for (EmployeeEntity employee : contributors) {
                     if (employee.getBills() == null) {
                         employee.setBills(new ArrayList<>());
                     }
                     employee.getBills().add(bill);
-                    if(trip != null){
-                        // Get the existing food bill map or create a new one if it doesn't exist
+
+                    if (trip != null) {
+                        // Update food bills
                         Map<String, Double> totalFoodBills = trip.getTotalFoodBill();
                         if (totalFoodBills == null) {
                             totalFoodBills = new HashMap<>();
                         }
-
-                        // Update the food bill for the specific employee
-                        totalFoodBills.put(employee.getEmpId(), totalFoodBills.getOrDefault(employee.getEmpId(), 0.0) + perShareCost);
-
-                        // Set the updated food bill map
+                        totalFoodBills.put(employee.getEmpId(),
+                                totalFoodBills.getOrDefault(employee.getEmpId(), 0.0) + perShareCost);
                         trip.setTotalFoodBill(totalFoodBills);
 
-                        // Save the updated trip entity
-                        tripRepository.save(trip);
-                    }
-
-                    if (!(bill.getBillPayer().equalsIgnoreCase(employee.getEmpId()))) {
-                        if (trip != null) {
-                            // Retrieve the existing dues map or create a new one if it's null
+                        // Handle dues logic
+                        if (!bill.getBillPayer().equalsIgnoreCase(employee.getEmpId())) {
                             Map<String, Map<String, Double>> dues = trip.getDues();
                             if (dues == null) {
                                 dues = new HashMap<>();
                             }
 
-                            // Check if the employee already has a due record in the dues map
-                            Map<String, Double> dueRecord = dues.get(employee.getEmpId());
-                            if (dueRecord == null) {
-                                dueRecord = new HashMap<>();
+                            Map<String, Double> dueRecord = dues.getOrDefault(employee.getEmpId(), new HashMap<>());
+                            double existingDue = dueRecord.getOrDefault(bill.getBillPayer(), 0.0);
+
+                            // Add the new due amount
+                            double newDue = existingDue + perShareCost;
+
+                            // Handle due balancing logic
+                            Map<String, Double> billPayerDueRecord = dues.getOrDefault(bill.getBillPayer(), new HashMap<>());
+                            double reverseDue = billPayerDueRecord.getOrDefault(employee.getEmpId(), 0.0);
+
+                            if (reverseDue > 0) {
+                                if (newDue > reverseDue) {
+                                    // Bill payer owes more to the current employee
+                                    newDue -= reverseDue;
+                                    billPayerDueRecord.remove(employee.getEmpId());
+                                    dueRecord.put(bill.getBillPayer(), newDue);
+                                } else if (newDue < reverseDue) {
+                                    // Current employee owes less to the bill payer
+                                    reverseDue -= newDue;
+                                    billPayerDueRecord.put(employee.getEmpId(), reverseDue);
+                                    dueRecord.remove(bill.getBillPayer());
+                                } else {
+                                    // Balances out completely
+                                    billPayerDueRecord.remove(employee.getEmpId());
+                                    dueRecord.remove(bill.getBillPayer());
+                                }
+                            } else {
+                                // No reverse due; simply add/update the due record
+                                dueRecord.put(bill.getBillPayer(), newDue);
                             }
 
-                            // Add or update the due for the specific bill payer
-                            double existingDue = dueRecord.getOrDefault(bill.getBillPayer(), 0.0); // Get existing due, or default to 0.0
-                            dueRecord.put(bill.getBillPayer(), existingDue + perShareCost); // Add the new amount to the existing due
-
-                            // Update the dues map for the employee
                             dues.put(employee.getEmpId(), dueRecord);
-
-                            // Save the updated trip entity
+                            dues.put(bill.getBillPayer(), billPayerDueRecord);
                             trip.setDues(dues);
                             tripRepository.save(trip);
                         }
@@ -130,98 +145,124 @@ public class BillService {
 
                     employeeRepository.save(employee); // Save updated employee
                 }
-
-
             }
         }
-        if(trip != null && bill != null){
+
+        // Add the bill to the trip
+        if (trip != null && bill != null) {
             trip.getBills().add(bill);
             tripRepository.save(trip);
             billRepository.save(bill);
         }
+
         return bill;
     }
 
-    public BillsEntity createBillSplitUnequal(BillsEntity bill,ObjectId tripId){
 
+    public BillsEntity createBillSplitUnequal(BillsEntity bill, ObjectId tripId) {
         bill.setTripId(tripId);
         bill.setNumberOfContributors(bill.getContributorsIds().toArray().length);
         TripEntity trip = tripService.getTripById(bill.getTripId());
-        if(bill.getSplitBill()){
+
+        if (bill.getSplitBill()) {
             bill.setPerPersonShare(0.0);
-            // Populate the contributerShare map
+
             if (bill.getContributorsIds() != null && !bill.getContributorsIds().isEmpty()) {
+                // Fetch contributors
                 List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(bill.getContributorsIds());
                 billRepository.save(bill);
-                // Update each employee's bills list and save
+
                 for (EmployeeEntity employee : contributors) {
                     if (employee.getBills() == null) {
                         employee.setBills(new ArrayList<>());
                     }
                     employee.getBills().add(bill);
 
-
-                    if(trip != null){
-                        // Get the existing food bill map or create a new one if it doesn't exist
+                    if (trip != null) {
+                        // Update total food bills
                         Map<String, Double> totalFoodBills = trip.getTotalFoodBill();
                         if (totalFoodBills == null) {
                             totalFoodBills = new HashMap<>();
                         }
 
-                        // Update the food bill for the specific employee
                         totalFoodBills.put(
                                 employee.getEmpId(),
-                                totalFoodBills.getOrDefault(
-                                        employee.getEmpId(), 0.0
-                                ) + bill.getContributerShare().getOrDefault(
-                                        employee.getEmpId(),0.0)
+                                totalFoodBills.getOrDefault(employee.getEmpId(), 0.0)
+                                        + bill.getContributerShare().getOrDefault(employee.getEmpId(), 0.0)
                         );
-
-                        // Set the updated food bill map
                         trip.setTotalFoodBill(totalFoodBills);
-
-                        // Save the updated trip entity
                         tripRepository.save(trip);
                     }
 
-                    if (!(bill.getBillPayer().equalsIgnoreCase(employee.getEmpId()))) {
+                    if (!bill.getBillPayer().equalsIgnoreCase(employee.getEmpId())) {
                         if (trip != null) {
-                            // Retrieve the existing dues map or create a new one if it's null
+                            // Retrieve existing dues map or initialize it
                             Map<String, Map<String, Double>> dues = trip.getDues();
                             if (dues == null) {
                                 dues = new HashMap<>();
                             }
 
-                            // Check if the employee already has a due record in the dues map
-                            Map<String, Double> dueRecord = dues.get(employee.getEmpId());
-                            if (dueRecord == null) {
-                                dueRecord = new HashMap<>();
+                            // Calculate current due
+                            double currentDue = bill.getContributerShare().getOrDefault(employee.getEmpId(), 0.0);
+
+                            // Balance dues between bill payer and contributor
+                            String payerId = bill.getBillPayer();
+                            String contributorId = employee.getEmpId();
+
+                            Map<String, Double> payerDues = dues.getOrDefault(payerId, new HashMap<>());
+                            Map<String, Double> contributorDues = dues.getOrDefault(contributorId, new HashMap<>());
+
+                            // Check if there are existing dues between payer and contributor
+                            double existingDueFromContributor = contributorDues.getOrDefault(payerId, 0.0);
+                            double existingDueFromPayer = payerDues.getOrDefault(contributorId, 0.0);
+
+                            if (existingDueFromPayer > 0) {
+                                // Payer already owes contributor, adjust the balance
+                                if (existingDueFromPayer > currentDue) {
+                                    payerDues.put(contributorId, existingDueFromPayer - currentDue);
+                                    currentDue = 0;
+                                } else {
+                                    currentDue -= existingDueFromPayer;
+                                    payerDues.remove(contributorId);
+                                }
                             }
 
-                            // Add or update the due for the specific bill payer
-                            double existingDue = dueRecord.getOrDefault(bill.getBillPayer(), 0.0); // Get existing due, or default to 0.0
+                            if (currentDue > 0) {
+                                // Contributor owes the remaining amount to the payer
+                                contributorDues.put(payerId, existingDueFromContributor + currentDue);
+                            }
 
-                            // Add or update the due for the specific bill payer
-                            dueRecord.put(bill.getBillPayer(), existingDue + bill.getContributerShare().getOrDefault(employee.getEmpId(),0.0));
+                            // Update the dues map
+                            if (!payerDues.isEmpty()) {
+                                dues.put(payerId, payerDues);
+                            } else {
+                                dues.remove(payerId);
+                            }
 
-                            // Update the dues map for the employee
-                            dues.put(employee.getEmpId(), dueRecord);
+                            if (!contributorDues.isEmpty()) {
+                                dues.put(contributorId, contributorDues);
+                            } else {
+                                dues.remove(contributorId);
+                            }
 
-                            // Save the updated trip entity
                             trip.setDues(dues);
                             tripRepository.save(trip);
                         }
                     }
+
                     employeeRepository.save(employee); // Save updated employee
                 }
             }
         }
-        if(trip != null && bill != null){
+
+        if (trip != null && bill != null) {
             trip.getBills().add(bill);
             tripRepository.save(trip);
         }
+
         return bill;
     }
+
 
     public BillsEntity createBillNoSplit(BillsEntity bill,ObjectId tripId){
         bill.setTripId(tripId);
