@@ -59,6 +59,7 @@ const EmployeeDetailPage = () => {
 
             if (response.status === 201) {
                 // Update user state with new details, including the updated unhashed password
+                console.log(response.data)
                 setUser({
                     ...user,
                     empName: formData.empName,
@@ -69,8 +70,10 @@ const EmployeeDetailPage = () => {
 
                 setFormData((prevData) => ({
                     ...prevData,
-                    password: response.data.password, // Update the password in form state
+                    password: response.data.password // Update the password in form state
                 }));
+
+                console.log(user)
 
                 setBtnLoading(false);
                 toast.success('User Details Updated Successfully!', {
