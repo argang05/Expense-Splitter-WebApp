@@ -84,3 +84,11 @@ img {
 .logout-button:hover{
   background-color: #ca4040;
 }
+
+.bxs{
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.2), 0 8px 22px 0 rgba(0, 0, 0, 0.19);
+}
+
+.bxsw {
+  text-shadow: 0 0.5px 1px rgba(3, 171, 255, 0.5); 
+}

@@ -130,7 +130,7 @@ const EmployeeDetailPage = () => {
                     Employee Password: {user?.password ? (user.password.length > 15 ? user.password.substring(0, 15)+'...' : user.password) : 'admin123'}
                 </h3>
                 <button
-                    className="orange-btn scale-out h-[auto] w-full py-3 sm:py-4 cursor-pointer px-8 sm:px-10 text-lg sm:text-2xl font-semibold bg-[#F6490D] rounded-2xl"
+                    className="border-[2px] bxs border-[#000249] orange-btn scale-out h-[auto] w-full py-3 sm:py-4 cursor-pointer px-8 sm:px-10 text-lg sm:text-2xl font-semibold bg-[#F6490D] rounded-2xl"
                     onClick={openModal}
                 >
                     Update Employee Details

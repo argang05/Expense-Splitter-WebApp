@@ -13,6 +13,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     splitEqually: true,
     billPayer: "",
     contributorsIds: [],
+    billDate:"",
   });
 
   const [employeeList, setEmployeeList] = useState([]);
@@ -284,9 +285,9 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     formData.append("bill", JSON.stringify(billData));
     formData.append("image", image);
 
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
     onBillFormSubmit(formData); // Submit the form data
     onClose(); // Close the form
@@ -317,6 +318,19 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
             className="p-2 border rounded-md text-black"
             required
           />
+
+          {/* Bill Date */}
+          <div className="flex items-center gap-2">
+          <label className="text-gray-400">Bill Date:</label>
+          <input
+            type="date"
+            name="billDate"
+            value={billData.billDate}
+            onChange={(e) => setBillData({...billData , billDate : e.target.value})}
+            className="p-2 border rounded-md text-gray-400"
+            required
+            />
+          </div>
 
           <div className="flex items-center gap-2">
             <label className="text-gray-400">Bill Payer:</label>

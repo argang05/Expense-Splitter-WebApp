@@ -193,7 +193,7 @@ const HomePage = () => {
 
             <button
               onClick={() => setShowForm(true)}
-              className="orange-btn scale-out h-auto w-full py-4 md:py-8 cursor-pointer px-5 md:px-20 text-xl md:text-4xl font-semibold bg-[#F6490D] rounded-2xl"
+              className="orange-btn bxs border-[2px] border-[#000249] scale-out h-auto w-full py-4 md:py-8 cursor-pointer px-5 md:px-20 text-xl md:text-4xl font-semibold bg-[#F6490D] rounded-2xl"
             >
               Add Trip
             </button>

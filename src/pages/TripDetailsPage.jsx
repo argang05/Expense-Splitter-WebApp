@@ -8,6 +8,7 @@ import { DataContext } from '../contexts/UserContext';
 import Loader from '../components/Loader';
 import CreateBillForm from '../components/CreateBillForm';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { isAdmin } from '../config/adminConfig';
 
 const TripDetailsPage = () => {
   const { tripid } = useParams();
@@ -204,7 +205,7 @@ const TripDetailsPage = () => {
           <h3 className="text-lg text-[#000249] font-medium">
             Number Of Team Members: {tripDetail?.groupStrength}
           </h3>
-          {employee?.empId === import.meta.env.VITE_ADMIN_EMPID && (
+          {isAdmin(employee?.empId) && (
             <div className="flex items-center justify-items-start gap-1">
               <h3 className="text-lg text-[#000249] font-medium">
                 Exchange Rate: {tripDetail?.exchangeRate}
@@ -220,7 +221,7 @@ const TripDetailsPage = () => {
           <h3 className="text-xl text-[#000249] font-semibold">
             Team Members:
           </h3>
-          <div className="w-full flex flex-col gap-4 items-center justify-between">
+          <div className="w-full flex flex-col gap-6 items-center justify-between">
             {tripDetail?.groupMembersIds.map((groupMemberId, indx) => (
               <TeamMemberDetail
                 key={indx}
@@ -235,14 +236,14 @@ const TripDetailsPage = () => {
           </h3>
           <div className="w-full h-auto flex justify-center">
             <button
-              className="orange-btn scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#F6490D] rounded-2xl"
+              className="orange-btn bxs border-[2px] border-[#000249] scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#F6490D] rounded-2xl"
               onClick={() => setShowForm(true)}
             >
               Add Bill
             </button>
           </div>
           {tripDetail?.bills.length <= 0 ? (
-            <div className="h-20 w-full py-6 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between">
+            <div className="bxs border-[3px] border-[#03abff] h-20 w-full py-6 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between">
               <h1 className="text-2xl font-bold">No Bill Records Found!</h1>
             </div>
           ) : (
@@ -258,7 +259,7 @@ const TripDetailsPage = () => {
           <div className="w-full h-auto flex justify-center">
             <NavLink
               to={`/trip/employee-expense-report/${tripDetail?.id}`}
-              className="orange-btn scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#F6490D] rounded-2xl"
+              className="border-[2px] bxs border-[#000249] orange-btn scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#F6490D] rounded-2xl"
             >
               Calculate Employee Expense Records
             </NavLink>

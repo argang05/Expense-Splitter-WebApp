@@ -4,6 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { DataContext } from "../contexts/UserContext";
 import { ToastContainer, toast, Bounce } from "react-toastify";
+import { isAdmin } from "../config/adminConfig";
 
 const CreateTripForm = ({ onClose, onSubmit }) => {
 
@@ -175,8 +176,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     return;
     }
     if (
-    !tripData.groupMembersIds.includes(user?.empId) &&
-    user?.empId !== import.meta.env.VITE_ADMIN_EMPID
+    (!tripData.groupMembersIds.includes(user?.empId)) &&
+    (!isAdmin(user?.empId))
     ) {
       setBtnLoading(false)
     toast.error("You cannot add a trip where you are not included!", {
@@ -200,8 +201,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
       numberOfDays,
     };
     setBtnLoading(false)
-    // console.log("FinalData: ",finalData)
-    onSubmit(finalData);
+    console.log("FinalData: ",finalData)
+    // onSubmit(finalData);
     onClose(); // Close the form after submission
     // Provide success feedback
     toast.success("Trip successfully added!", {
@@ -397,7 +398,7 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             pauseOnHover
             theme="colored"
         transition={Bounce}
-        className="mt-20"
+        className="mt-48 sm:mt-28"
           />
     </div>
   );

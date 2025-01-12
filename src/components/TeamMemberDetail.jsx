@@ -67,7 +67,7 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
       {loading ? (
         <ComponentLoader />
       ) : (
-        <div className="h-[auto] w-full py-4 px-5 bg-[#000249] text-white rounded-lg flex flex-col gap-4 items-start justify-center">
+        <div className="h-[auto] bxs border-[3px] border-[#03abff] w-full py-4 px-5 bg-[#000249] text-white rounded-lg flex flex-col gap-4 items-start justify-center">
           <h2 className="text-md font-medium">Name: {empData?.empName}</h2>
           <h2 className="text-md font-medium">Employee ID: {empData?.empId}</h2>
           <h2 className="text-md font-medium">Email: {empData?.email}</h2>

@@ -14,7 +14,7 @@ const Header = () => {
 
     return (
         <header className="header-container w-full h-24 bg-[#111111] flex items-center justify-between px-4 md:px-6 fixed">
-            <NavLink to="/" className="header-title text-lg font-semibold text-white">
+            <NavLink to="/" className="bxsw header-title text-lg font-semibold text-white">
                 Hello, {employee?.empName}!! 👋
             </NavLink>
             <div className="header-actions flex items-center gap-4">

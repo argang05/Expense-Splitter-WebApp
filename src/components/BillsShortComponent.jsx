@@ -36,18 +36,28 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
     };
 
     fetchBillDetails();
-  }, [bill, getEmployeeById,tripId]);
+  }, [bill, getEmployeeById, tripId]);
+  
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp); // Convert the timestamp to a Date object
+    const day = String(date.getDate()).padStart(2, "0"); // Ensure 2 digits
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = date.getFullYear();
+
+    return `${day}-${month}-${year}`; // Return in dd-mm-yyyy format
+  };
 
   return (
   <>
     {loading ?<ComponentLoader/> 
         :
-        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between">
+        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
             <div className="h-64 sm:h-72 flex flex-col items-start justify-center gap-4">
             <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
             <h2 className="text-sm sm:text-lg font-medium">
               Bill Amount: {currencySymbol} {bill?.billAmt || 0}
             </h2>
+            {bill?.billDate && (<h2 className="text-sm sm:text-lg font-medium">Bill Date: {formatDate(bill?.billDate)}</h2>)}
             <h2 className="text-sm sm:text-lg font-medium">Bill Payer: {payerName || 'N/A'}</h2>
             <h2 className="text-sm sm:text-lg font-semibold">Contribution Record:</h2>
             {sharesDetails.length > 0 ? (
