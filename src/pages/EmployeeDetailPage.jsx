@@ -127,7 +127,7 @@ const EmployeeDetailPage = () => {
                 <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee Email: {user?.email}</h3>
                 <h3 className="text-md sm:text-lg text-[#000249] font-medium">Employee Tier: {user?.empTier}</h3>
                 <h3 className="text-md sm:text-lg text-[#000249] font-medium">
-                    Employee Password: {user?.password ? (user.password.length > 8 ? user.password.substring(0, 8)+'...' : user.password) : 'admin123'}
+                    Employee Password: {user?.password ? (user.password.length > 15 ? user.password.substring(0, 15)+'...' : user.password) : 'admin123'}
                 </h3>
                 <button
                     className="orange-btn scale-out h-[auto] w-full py-3 sm:py-4 cursor-pointer px-8 sm:px-10 text-lg sm:text-2xl font-semibold bg-[#F6490D] rounded-2xl"
