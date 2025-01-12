@@ -59,7 +59,7 @@ const EmployeeDetailPage = () => {
 
             if (response.status === 201) {
                 // Update user state with new details, including the updated unhashed password
-                console.log(response.data)
+                // console.log(response.data)
                 setUser({
                     ...user,
                     empName: formData.empName,
@@ -73,7 +73,7 @@ const EmployeeDetailPage = () => {
                     password: response.data.password // Update the password in form state
                 }));
 
-                console.log(user)
+                // console.log(user)
 
                 setBtnLoading(false);
                 toast.success('User Details Updated Successfully!', {
@@ -192,7 +192,7 @@ const EmployeeDetailPage = () => {
                             <div className="flex justify-between gap-4 mt-4">
                                 <button
                                     type="button"
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => { setIsModalOpen(false);  setBtnLoading(false)}}
                                     className="px-4 py-2 bg-red-500 text-white rounded"
                                 >
                                     Cancel
