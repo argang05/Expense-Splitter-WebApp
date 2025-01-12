@@ -52,7 +52,7 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
     {loading ?<ComponentLoader/> 
         :
         <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
-            <div className="h-64 sm:h-72 flex flex-col items-start justify-center gap-4">
+            <div className="h-[auto] flex flex-col items-start justify-center gap-4">
             <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
             <h2 className="text-sm sm:text-lg font-medium">
               Bill Amount: {currencySymbol} {bill?.billAmt || 0}
