@@ -22,4 +22,4 @@ cloudinary:
   api_key: ${CLOUDINARY_API_KEY}
   api_secret: ${CLOUDINARY_API_SECRET}
 
-admin-empid: ${ADMIN_EMPID}
+admin-empids: ${ADMIN_EMPIDS}

@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,4 +36,5 @@ public class BillsEntity {
     private List<String> contributorsIds;
     private Map<String,Double> contributerShare = new HashMap<>();
     private String imageUrl;
+    private Date billDate;
 }

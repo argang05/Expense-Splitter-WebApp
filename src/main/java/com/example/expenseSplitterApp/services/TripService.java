@@ -1,5 +1,6 @@
 package com.example.expenseSplitterApp.services;
 
+import com.example.expenseSplitterApp.config.AdminConfig;
 import com.example.expenseSplitterApp.dto.EmployeeFinalExpenseReportDTO;
 import com.example.expenseSplitterApp.entity.BillsEntity;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
@@ -21,8 +22,8 @@ import java.util.*;
 @Service
 public class TripService {
 
-    @Value("${admin-empid}")
-    private String adminEmpId;
+    @Autowired
+    private AdminConfig adminConfig;
 
     @Autowired
     private EmployeeService employeeService;
@@ -43,7 +44,7 @@ public class TripService {
     private TripRepositoryImpl tripRepositoryImpl;
 
     public List<TripEntity> getAllTrips(String empId) {
-        if(empId.equalsIgnoreCase(adminEmpId)){
+        if(adminConfig.getAdminEmpIds().contains(empId)){
             return tripRepositoryImpl.getAllTripsWithinThreeMonths();
         }else{
             return tripRepositoryImpl.getAllTripsWithinThreeMonthsEmployeeSpecific(empId);
@@ -103,7 +104,7 @@ public class TripService {
     }
 
     public Boolean updateExchangeRate(String empId, ExchangeRateEntity exchangeRateEntity, ObjectId tripId){
-        if(empId.equalsIgnoreCase(adminEmpId)){
+        if(adminConfig.getAdminEmpIds().contains(empId)){
             TripEntity trip = tripRepository.findById(tripId).orElse(null);
             if(trip != null){
                 trip.setExchangeRate(exchangeRateEntity.getExchangeRate());
