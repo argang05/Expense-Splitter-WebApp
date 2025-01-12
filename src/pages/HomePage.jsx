@@ -203,7 +203,7 @@ const HomePage = () => {
               <TripShortComponent key={trip.id} trip={trip} />
                 )) : 
                 <h1 className="text-2xl text-[#000249] md:text-4xl font-bold text-center">
-                No Trips To Show!
+                No Trips Found!
                 </h1>
               }
 
