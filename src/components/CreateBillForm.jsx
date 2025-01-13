@@ -309,9 +309,9 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     formData.append("bill", JSON.stringify(billData));
     formData.append("image", image);
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
 
     onBillFormSubmit(formData); // Submit the form data
     onClose(); // Close the form
