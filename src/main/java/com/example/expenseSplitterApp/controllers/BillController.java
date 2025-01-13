@@ -1,6 +1,7 @@
 package com.example.expenseSplitterApp.controllers;
 
 import com.example.expenseSplitterApp.entity.BillsEntity;
+import com.example.expenseSplitterApp.repositories.BillRepository;
 import com.example.expenseSplitterApp.services.BillService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,9 @@ public class BillController {
 
     @Autowired
     private BillService billService;
+
+    @Autowired
+    private BillRepository billRepository;
 
     @GetMapping("/tripId/{id}")
     public ResponseEntity<?> getFoodBillsByTripId(@PathVariable String id){
@@ -92,6 +96,40 @@ public class BillController {
             log.error("Unexpected Error While Creating Bill: ", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @DeleteMapping("/delete/billId/{bId}/tripId/{tId}")
+    public ResponseEntity<?> deleteBillEqualSplit(@PathVariable String bId, @PathVariable String tId){
+        ObjectId billId = new ObjectId(bId);
+        ObjectId tripId = new ObjectId(tId);
+        BillsEntity bill = billRepository.findById(billId).orElse(null);
+        if(bill != null){
+            if(bill.getSplitBill()){
+                if(bill.getSplitEqually()){
+                    boolean isDeleted = billService.deleteBillEqualSplit(billId,tripId);
+                    if(isDeleted){
+                        return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }else{
+                    boolean isDeleted = billService.deleteBillSplitUnequal(billId,tripId);
+                    if(isDeleted){
+                        return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
+                }
+            }else{
+                boolean isDeleted = billService.deleteBillNoSplit(billId,tripId);
+                if(isDeleted){
+                    return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        }
+        return null;
     }
 
 }

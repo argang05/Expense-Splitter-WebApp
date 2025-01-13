@@ -348,6 +348,265 @@ public class BillService {
         return bill;
     }
 
+    public boolean deleteBillEqualSplit(ObjectId billId, ObjectId tripId) {
+        // Fetch the bill
+        BillsEntity bill = billRepository.findById(billId).orElse(null);
+        if (bill == null) {
+            throw new IllegalArgumentException("Bill not found with the provided ID.");
+        }
+
+        // Fetch the trip
+        TripEntity trip = tripService.getTripById(tripId);
+        if (trip == null) {
+            throw new IllegalArgumentException("Trip not found with the provided ID.");
+        }
+
+        // Reverse the totalFoodBill for contributors
+        Map<String, Double> totalFoodBill = trip.getTotalFoodBill();
+        if (totalFoodBill != null && bill.getContributerShare() != null) {
+            for (Map.Entry<String, Double> entry : bill.getContributerShare().entrySet()) {
+                String contributorId = entry.getKey();
+                Double contribution = entry.getValue();
+
+                // Deduct contribution from total food bill
+                totalFoodBill.put(contributorId, totalFoodBill.getOrDefault(contributorId, 0.0) - contribution);
+                if (totalFoodBill.get(contributorId) <= 0) {
+                    totalFoodBill.remove(contributorId); // Remove if balance is zero
+                }
+            }
+        }
+        trip.setTotalFoodBill(totalFoodBill);
+
+        // Reverse dues
+        if (bill.getContributerShare() != null) {
+            for (Map.Entry<String, Double> entry : bill.getContributerShare().entrySet()) {
+                String contributorId = entry.getKey();
+                Double contribution = entry.getValue();
+
+                if (!bill.getBillPayer().equalsIgnoreCase(contributorId)) {
+                    Map<String, Map<String, Double>> dues = trip.getDues();
+
+                    // Adjust contributor dues
+                    Map<String, Double> contributorDues = dues.getOrDefault(contributorId, new HashMap<>());
+                    double currentDue = contributorDues.getOrDefault(bill.getBillPayer(), 0.0);
+
+                    if (currentDue > contribution) {
+                        contributorDues.put(bill.getBillPayer(), currentDue - contribution);
+                    } else if (currentDue == contribution) {
+                        contributorDues.remove(bill.getBillPayer());
+                    } else {
+                        // Reverse due adjustment for bill payer
+                        Map<String, Double> payerDues = dues.getOrDefault(bill.getBillPayer(), new HashMap<>());
+                        double reverseDue = payerDues.getOrDefault(contributorId, 0.0);
+
+                        payerDues.put(contributorId, reverseDue + (contribution - currentDue));
+                        dues.put(bill.getBillPayer(), payerDues);
+
+                        contributorDues.remove(bill.getBillPayer());
+                    }
+
+                    if (contributorDues.isEmpty()) {
+                        dues.remove(contributorId);
+                    } else {
+                        dues.put(contributorId, contributorDues);
+                    }
+
+                    trip.setDues(dues);
+                }
+            }
+        }
+
+
+
+        // Remove bill from contributors
+        List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(bill.getContributorsIds());
+        for (EmployeeEntity employee : contributors) {
+            if (employee.getBills() != null) {
+                employee.getBills().removeIf(b -> b.getId().equals(billId));
+                employeeRepository.save(employee);
+            }
+        }
+
+        // Remove bill from trip
+        if (trip.getBills() != null) {
+            trip.getBills().removeIf(b -> b.getId().equals(billId));
+        }
+
+        // Save updated trip
+        tripRepository.save(trip);
+
+        // Delete bill from repository
+        billRepository.delete(bill);
+        return true;
+    }
+
+    public boolean deleteBillNoSplit(ObjectId billId, ObjectId tripId) {
+        // Fetch the bill
+        BillsEntity bill = billRepository.findById(billId).orElse(null);
+        if (bill == null) {
+            throw new IllegalArgumentException("Bill not found with the provided ID.");
+        }
+
+        // Fetch the trip
+        TripEntity trip = tripService.getTripById(tripId);
+        if (trip == null) {
+            throw new IllegalArgumentException("Trip not found with the provided ID.");
+        }
+
+        // Fetch the employee who paid the bill
+        EmployeeEntity employee = employeeRepository.findByEmpId(bill.getBillPayer());
+        if (employee == null) {
+            throw new IllegalArgumentException("Bill payer not found with the provided ID.");
+        }
+
+        // Adjust the totalFoodBill in the TripEntity
+        Map<String, Double> totalFoodBills = trip.getTotalFoodBill();
+        if (totalFoodBills != null) {
+            String billPayer = bill.getBillPayer();
+            double currentBillAmount = bill.getBillAmt();
+
+            // Deduct the bill amount from the payer's food bill
+            double updatedAmount = totalFoodBills.getOrDefault(billPayer, 0.0) - currentBillAmount;
+
+            if (updatedAmount <= 0) {
+                totalFoodBills.remove(billPayer); // Remove if the balance becomes zero or negative
+            } else {
+                totalFoodBills.put(billPayer, updatedAmount);
+            }
+
+            trip.setTotalFoodBill(totalFoodBills);
+        }
+
+        // Remove the bill from the trip's bills list
+        if (trip.getBills() != null) {
+            trip.getBills().removeIf(b -> b.getId().equals(billId));
+        }
+
+        // Save the updated trip entity
+        tripRepository.save(trip);
+
+        // Remove the bill from the employee's bills list
+        if (employee.getBills() != null) {
+            employee.getBills().removeIf(b -> b.getId().equals(billId));
+        }
+
+        // Save the updated employee entity
+        employeeRepository.save(employee);
+
+        // Delete the bill from the repository
+        billRepository.delete(bill);
+
+        return true;
+    }
+
+    public boolean deleteBillSplitUnequal(ObjectId billId, ObjectId tripId) {
+        // Fetch the bill
+        BillsEntity bill = billRepository.findById(billId).orElse(null);
+        if (bill == null) {
+            throw new IllegalArgumentException("Bill not found with the provided ID.");
+        }
+
+        // Fetch the trip
+        TripEntity trip = tripService.getTripById(tripId);
+        if (trip == null) {
+            throw new IllegalArgumentException("Trip not found with the provided ID.");
+        }
+
+        // Fetch contributors
+        List<String> contributorsIds = bill.getContributorsIds();
+        List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(contributorsIds);
+
+        // Adjust the totalFoodBill
+        if (trip.getTotalFoodBill() != null) {
+            Map<String, Double> totalFoodBills = trip.getTotalFoodBill();
+            for (EmployeeEntity contributor : contributors) {
+                String empId = contributor.getEmpId();
+                double contributorShare = bill.getContributerShare().getOrDefault(empId, 0.0);
+
+                // Deduct contributor's share from total food bills
+                double updatedAmount = totalFoodBills.getOrDefault(empId, 0.0) - contributorShare;
+                if (updatedAmount <= 0) {
+                    totalFoodBills.remove(empId); // Remove if balance becomes zero or negative
+                } else {
+                    totalFoodBills.put(empId, updatedAmount);
+                }
+            }
+            trip.setTotalFoodBill(totalFoodBills);
+        }
+
+        // Adjust the dues map
+        if (trip.getDues() != null) {
+            Map<String, Map<String, Double>> dues = trip.getDues();
+            String billPayer = bill.getBillPayer();
+
+            for (EmployeeEntity contributor : contributors) {
+                String contributorId = contributor.getEmpId();
+                double contributorShare = bill.getContributerShare().getOrDefault(contributorId, 0.0);
+
+                // Adjust the dues between billPayer and contributor
+                Map<String, Double> payerDues = dues.getOrDefault(billPayer, new HashMap<>());
+                Map<String, Double> contributorDues = dues.getOrDefault(contributorId, new HashMap<>());
+
+                // Check if there are existing dues between the two parties
+                double existingDueFromContributor = contributorDues.getOrDefault(billPayer, 0.0);
+                double existingDueFromPayer = payerDues.getOrDefault(contributorId, 0.0);
+
+                if (existingDueFromContributor > 0) {
+                    // Contributor owes payer, adjust the balance
+                    if (existingDueFromContributor > contributorShare) {
+                        contributorDues.put(billPayer, existingDueFromContributor - contributorShare);
+                    } else {
+                        contributorDues.remove(billPayer);
+                    }
+                } else if (existingDueFromPayer > 0) {
+                    // Payer owes contributor, adjust the balance
+                    if (existingDueFromPayer > contributorShare) {
+                        payerDues.put(contributorId, existingDueFromPayer - contributorShare);
+                    } else {
+                        payerDues.remove(contributorId);
+                    }
+                }
+
+                // Update the dues map
+                if (!payerDues.isEmpty()) {
+                    dues.put(billPayer, payerDues);
+                } else {
+                    dues.remove(billPayer);
+                }
+
+                if (!contributorDues.isEmpty()) {
+                    dues.put(contributorId, contributorDues);
+                } else {
+                    dues.remove(contributorId);
+                }
+            }
+            trip.setDues(dues);
+        }
+
+        // Remove the bill from the trip's bills list
+        if (trip.getBills() != null) {
+            trip.getBills().removeIf(b -> b.getId().equals(billId));
+        }
+        tripRepository.save(trip);
+
+        // Remove the bill from each contributor's bills list
+        for (EmployeeEntity contributor : contributors) {
+            if (contributor.getBills() != null) {
+                contributor.getBills().removeIf(b -> b.getId().equals(billId));
+            }
+            employeeRepository.save(contributor);
+        }
+
+        // Delete the bill from the repository
+        billRepository.delete(bill);
+
+        return true;
+    }
+
+
+
+
+
     public List<BillsEntity> getFoodBillsByEmpId(String empId){
         return billRepositoryImpl.getFoodBillsByEmployeeId(empId);
     }
