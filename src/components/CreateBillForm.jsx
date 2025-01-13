@@ -5,15 +5,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 
-const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId }) => {
+const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId , tripDate , tripDuration }) => {
   const [billData, setBillData] = useState({
     billType: "",
-    billAmt: "",
+    billAmt: 0, // Change to number
     splitBill: false,
     splitEqually: true,
     billPayer: "",
     contributorsIds: [],
-    billDate:"",
+    billDate: "",
   });
 
   const [employeeList, setEmployeeList] = useState([]);
@@ -50,7 +50,9 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
         } finally {
           setLoading(false); // Stop loading
         }
-      };
+    };
+    
+
 
       fetchEmployees();
     }, [tripId]); // Trigger useEffect when tripId changes
@@ -58,7 +60,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   const handleFormClose = () => {
     setBillData({
       billType: "",
-      billAmt: "",
+      billAmt: 0,
       billPayer: "",
       contributorsIds: [],
     });
@@ -85,23 +87,33 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     setBillData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === "billAmt" ? parseFloat(value) || 0 : value, // Parse as a number
     }));
-  };
+};
 
   const handleAddContributor = (employeeId) => {
-    if (!billData.contributorsIds?.includes(employeeId)) {
-      setBillData((prevData) => ({
-        ...prevData,
-        contributorsIds: [...prevData.contributorsIds, employeeId],
-      }));
-    }
+    setBillData((prevData) => {
+      const currentContributors = Array.isArray(prevData.contributorsIds)
+        ? prevData.contributorsIds
+        : []; // Fallback to an empty array if undefined
+
+      if (!currentContributors.includes(employeeId)) {
+        return {
+          ...prevData,
+          contributorsIds: [...currentContributors, employeeId], // Append new contributor
+        };
+      }
+      return prevData; // No changes if employeeId already exists
+    });
+
     setSearchQuery("");
     setFilteredEmployees([]);
     setShowDropdown(false);
   };
+
 
   const handleRemoveContributor = (employeeId) => {
     setBillData((prevData) => ({
@@ -115,15 +127,23 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     });
   };
 
-  const handleContributionChange = (employeeId, amount) => {
-    setCustomContributions((prev) => ({
-      ...prev,
-      [employeeId]: parseFloat(amount),
+  const handleContributionChange = (contributorId, value) => {
+    setCustomContributions((prevContributions) => ({
+      ...prevContributions,
+      [contributorId]: parseFloat(value) || 0, // Ensure it's a number
     }));
   };
 
   const validateContributions = () => {
-    const totalContributions = Object.values(customContributions).reduce((acc, curr) => acc + curr, 0);
+    // Ensure contributions are parsed as numbers
+    const totalContributions = Object.values(customContributions)
+      .map((value) => parseFloat(value) || 0) // Convert to numbers
+      .reduce((acc, curr) => acc + curr, 0);
+
+    console.log("Custom Contributions:", customContributions);
+    console.log("Total Contributions:", totalContributions);
+    console.log("Bill Amount:", parseFloat(billData.billAmt));
+
     return totalContributions === parseFloat(billData.billAmt);
   };
 
@@ -139,26 +159,37 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
       setBillData(billData.splitEqually = false)
     }
 
-    // Check if bill type is provided
-    if (!billData.billType.trim()) {
-      toast.error("Bill Type is required.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
-      setLoading(false);
-      return;
-    }
+    console.log(billData)
+
+    // Parse trip start and end dates
+    const tripStartDate = new Date(tripDate); // Convert UNIX timestamp to date
+    const tripEndDate = new Date(tripDate + tripDuration * 24 * 60 * 60 * 1000); // Add trip duration in milliseconds
+    const billDate = new Date(billData.billDate);
+
 
     // Check if bill amount is valid
-    if (!billData.billAmt || billData.billAmt <= 0) {
-      toast.error("Please enter a valid Bill Amount greater than 0.", {
+    if (billData.billAmt <= 0) {
+        toast.error("Please enter a valid Bill Amount greater than 0.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setCustomContributions({});// Reset contributions
+        setBillData({...billData,billAmt:0})
+        setLoading(false);
+        return;
+    }
+    
+    if (billDate < tripStartDate || billDate > tripEndDate) {
+    toast.error(
+      `Bill Date must be between ${tripStartDate.toLocaleDateString()} and ${tripEndDate.toLocaleDateString()}.`,
+      {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -168,10 +199,13 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
         progress: undefined,
         theme: "colored",
         transition: Bounce,
-      });
-      setLoading(false);
-      return;
-    }
+      }
+      );
+    setCustomContributions({});// Reset contributions
+    setBillData({...billData,billAmt:0})
+    setLoading(false);
+    return;
+  }
 
     // Check if split bill option is selected
     if (billSplitText !== "Yes" && billSplitText !== "No") {
@@ -203,30 +237,33 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           progress: undefined,
           theme: "colored",
           transition: Bounce,
-        });
+        }); 
+
         setLoading(false);
         return;
       }
 
-      if (splitEquallyText === "No") {
-        // Validate custom contributions
-        if (!validateContributions()) {
-          toast.error("The sum of contributions must equal the bill amount.", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
-          });
-          setLoading(false);
-          return;
-        }
-        billData.contributerShare = customContributions;
+    // Validate contributions if not splitting equally
+    if (billSplitText === "Yes" && splitEquallyText === "No") {
+      if (!validateContributions()) {
+        toast.error("The sum of contributions must equal the bill amount.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setCustomContributions({});// Reset contributions
+        setBillData({...billData,billAmt:0})
+        setLoading(false);
+        return;
       }
+      billData.contributerShare = customContributions; // Update contributor shares
+    }
 
       // Check if contributors are selected
       if (billData.contributorsIds.length === 0) {
@@ -241,23 +278,8 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           theme: "colored",
           transition: Bounce,
         });
-        setLoading(false);
-        return;
-      }
-
-      // Check if bill payer is selected
-      if (!billData.billPayer.trim()) {
-        toast.error("Please select a Bill Payer.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
+        setCustomContributions({});// Reset contributions
+        setBillData({...billData,billAmt:0})
         setLoading(false);
         return;
       }
@@ -277,6 +299,8 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
         transition: Bounce,
       });
       setLoading(false);
+      setCustomContributions({});// Reset contributions
+      setBillData({...billData,billAmt:0})
       return;
     }
 
@@ -299,18 +323,23 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   <div className="mt-24 bg-white p-8 rounded-lg w-[90%] md:w-[70%] lg:w-[50%] max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold text-[#000249] mb-5">Create Bill</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <select
+              name="billType"
+              value={billData.billType}
+              onChange={handleInputChange}
+              className="p-2 border rounded-md text-black"
+              required
+            >
+              <option value="" disabled>
+                Select Bill Type
+              </option>
+              <option value="food">Food</option>
+              <option value="inter-travel">Inter-Travel</option>
+              <option value="other-official-bill">Other Official Bill</option>
+              <option value="others">Others</option>
+            </select>
           <input
             type="text"
-            name="billType"
-            placeholder="Bill Type"
-            value={billData.billType}
-            onChange={handleInputChange}
-            className="p-2 border rounded-md text-black"
-            required
-          />
-
-          <input
-            type="number"
             name="billAmt"
             placeholder="Bill Amount"
             value={billData.billAmt}
@@ -561,7 +590,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           draggable
           pauseOnHover
         theme="colored"
-        className="mt-28"
+        className="mt-32"
           transition={Bounce}
           />
     </div>

@@ -270,6 +270,8 @@ const TripDetailsPage = () => {
             onClose={() => setShowForm(false)}
             tripId={tripDetail?.id}
             tripGroupMembersIds={tripDetail?.groupMembersIds}
+            tripDate={tripDetail?.tripDate}
+            tripDuration={tripDetail?.numberOfDays}
             onBillFormSubmit={handleFormSubmit}
           />
         )}
