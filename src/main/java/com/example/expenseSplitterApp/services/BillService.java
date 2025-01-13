@@ -297,6 +297,57 @@ public class BillService {
         return bill;
     }
 
+    public BillsEntity createNonFoodBill(BillsEntity bill , ObjectId tripId){
+        bill.setTripId(tripId);
+        if(!bill.getSplitBill()){
+            billRepository.save(bill);
+            EmployeeEntity employee = employeeRepository.findByEmpId(bill.getBillPayer());
+            if(employee != null){
+                if (employee.getBills() == null) {
+                    employee.setBills(new ArrayList<>());
+                }
+                employee.getBills().add(bill);
+                employeeRepository.save(employee);
+            }
+        }else{
+            bill.setNumberOfContributors(bill.getContributorsIds().toArray().length);
+            if(bill.getSplitEqually()){
+                // Calculate per person share
+                Double perShareCost = Math.round(bill.getBillAmt() / bill.getNumberOfContributors() * 100.0) / 100.0;
+                bill.setPerPersonShare(perShareCost);
+                if (bill.getContributorsIds() != null && !bill.getContributorsIds().isEmpty()) {
+                    // Create contributor share map
+                    Map<String, Double> contributorShareMap = new HashMap<>();
+                    for (String contributorId : bill.getContributorsIds()) {
+                        contributorShareMap.put(contributorId, perShareCost);
+                    }
+                    bill.setContributerShare(contributorShareMap);
+                    billRepository.save(bill);
+                }
+            }else{
+                bill.setPerPersonShare(0.0);
+                billRepository.save(bill);
+            }
+            // Fetch all employees with matching empIds
+            if (bill.getContributorsIds() != null && !bill.getContributorsIds().isEmpty()) {
+                List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(bill.getContributorsIds());
+                for (EmployeeEntity employee : contributors) {
+                    if (employee.getBills() == null) {
+                        employee.setBills(new ArrayList<>());
+                    }
+                    employee.getBills().add(bill);
+                    employeeRepository.save(employee);
+                }
+            }
+        }
+        TripEntity trip = tripRepository.findById(tripId).orElse(null);
+        if (trip != null) {
+            trip.getBills().add(bill);
+            tripRepository.save(trip);
+        }
+        return bill;
+    }
+
     public List<BillsEntity> getFoodBillsByEmpId(String empId){
         return billRepositoryImpl.getFoodBillsByEmployeeId(empId);
     }

@@ -73,17 +73,19 @@ public class BillController {
                 bill.setImageUrl(imageUrl); // Set the image URL in the bill
             }
 
-            if(bill.getSplitBill()){
-                if(bill.getSplitEqually()){
-                    billService.createBillSplitEqual(bill, tripId);
-                }else{
-                    billService.createBillSplitUnequal(bill, tripId);
-                }
+            if(!(bill.getBillType().equalsIgnoreCase("Food"))){
+                billService.createNonFoodBill(bill,tripId);
             }else{
-                billService.createBillNoSplit(bill,tripId);
+                if(bill.getSplitBill()){
+                    if(bill.getSplitEqually()){
+                        billService.createBillSplitEqual(bill, tripId);
+                    }else{
+                        billService.createBillSplitUnequal(bill, tripId);
+                    }
+                }else{
+                    billService.createBillNoSplit(bill,tripId);
+                }
             }
-
-
 
             return new ResponseEntity<>(bill, HttpStatus.CREATED);
         } catch (Exception e) {
