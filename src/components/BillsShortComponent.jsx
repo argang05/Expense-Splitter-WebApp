@@ -3,12 +3,18 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { DataContext } from '../contexts/UserContext';
 import ComponentLoader from "./ComponentLoader";
+import axios from 'axios';
+import Loader from './Loader';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
   const { getEmployeeById } = useContext(DataContext);
   const [payerName, setPayerName] = useState(null);
   const [sharesDetails, setSharesDetails] = useState([]);
   const [loading, setLoading] = useState(true); 
+  const [pageLoading, setPageLoading] = useState(false);
+   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBillDetails = async () => {
@@ -47,11 +53,55 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
     return `${day}-${month}-${year}`; // Return in dd-mm-yyyy format
   };
 
+  const handleBillDeletion = async () => {
+    try {
+      setPageLoading(true);
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/bills/delete/billId/${bill?.id}/tripId/${bill?.tripId}`
+      );
+      if (response.status === 200) {
+        setPageLoading(false);
+        setTimeout(() => {
+          toast.success("Bill Deleted Successfully!", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "colored",
+            transition: Bounce,
+          });
+        }, 500);
+        alert("Bill Deleted Successfully!")
+        navigate(0);
+      } else if (response.status === 500) {
+        setPageLoading(false);
+        toast.error("Bill Deletion Unsuccessful!", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: false,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+              transition: Bounce,
+            });
+      }
+      
+    } catch (err) {
+      console.error("Bill Deletion Failed", err.response ? err.response.data : err.message);
+    }
+  }
+
   return (
   <>
     {loading ?<ComponentLoader/> 
         :
-        <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
+        <>
+        {pageLoading ? <Loader/> :<div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
             <div className="h-[auto] flex flex-col items-start justify-center gap-4">
             <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
             <h2 className="text-sm sm:text-lg font-medium">
@@ -70,12 +120,28 @@ const BillsShortComponent = ({ bill, currencySymbol,tripId }) => {
               <h2 className="text-sm sm:text-lg font-medium">No Contributions</h2>
             )}
             </div>
-            <div className="sm:h-64 h-72">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <button onClick={handleBillDeletion} className='bg-red-500 text-white px-4 py-2 rounded-md'>Delete</button>
               {(bill?.imageUrl === "") ? <h2 className='text-sm sm:text-lg font-medium text-[#03abff]'>No Bill Image</h2>  : <a href={bill?.imageUrl} target="_blank" >
-                <img className="w-auto sm:w-52 h-full border-[3px] border-[#03abff] rounded-lg" src={bill?.imageUrl} alt="food-bill"/>
+                <img className="w-auto sm:w-52 h-60 border-[3px] border-[#03abff] rounded-lg" src={bill?.imageUrl} alt="food-bill"/>
               </a>}
-            </div>
-        </div>}
+          </div>
+          </div>}
+        </>}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        className="mt-28"
+        transition={Bounce}
+      />
       </>
   );
 };
