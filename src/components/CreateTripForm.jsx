@@ -202,7 +202,7 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     };
     setBtnLoading(false)
     console.log("FinalData: ",finalData)
-    // onSubmit(finalData);
+    onSubmit(finalData);
     onClose(); // Close the form after submission
     // Provide success feedback
     toast.success("Trip successfully added!", {
