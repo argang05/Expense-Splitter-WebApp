@@ -99,21 +99,27 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
             Employee Tier: {empExpenceReport?.empTier}
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
-            Total Food Bill: {empExpenceReport?.currencySymbol}{' '}
+            Total Food Bill: USD{' '}
             {empExpenceReport?.totalFoodBill}
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
-            Total Per Diem Cost: {empExpenceReport?.currencySymbol}{' '}
+            Total Per Diem Cost: USD{' '}
             {empExpenceReport?.perDiemTotal}
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
-            Total Billable Limit: {empExpenceReport?.currencySymbol}{' '}
+            Total Billable Limit: USD{' '}
             {empExpenceReport?.billableLimitTotal}
           </h3>
-          <h3 className="text-lg text-[#000249] font-medium">
+            {(empExpenceReport?.remainingBalanceTotal < 0) ?
+              <h3 className="text-lg text-[#000249] font-medium">
+            Total Remaining Balance: USD{' '}
+            0 ; Excess : USD {Math.abs(empExpenceReport?.remainingBalanceTotal)}
+          </h3>
+              :
+              <h3 className="text-lg text-[#000249] font-medium">
             Total Remaining Balance: {empExpenceReport?.currencySymbol}{' '}
             {empExpenceReport?.remainingBalanceTotal}
-          </h3>
+          </h3>}
           <div>
             <h3 className="text-lg text-[#000249] font-semibold">Dues Record:</h3>
             {renderDues(empExpenceReport?.dues)}

@@ -100,7 +100,7 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     e.preventDefault();
     setBtnLoading(true)
      // Validate required fields
-  const requiredFields = ["tripName", "tripType", "tripPurpose", "country", "continent"];
+  const requiredFields = ["tripName", "country"];
   for (const field of requiredFields) {
     if (!tripData[field]?.trim()) {
       setBtnLoading(false)
@@ -236,26 +236,39 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
           />
 
           {/* Trip Type */}
-          <input
-            type="text"
-            name="tripType"
-            placeholder="Trip Type"
-            value={tripData.tripType}
-            onChange={handleInputChange}
-            className="p-2 border rounded-md  text-black"
-            required
-          />
+          <div className="flex items-center gap-2">
+            <label htmlFor="tripType" className="text-gray-400">Trip Type</label>
+            <select
+              name="tripType"
+              value={tripData.tripType}
+              onChange={handleInputChange}
+              className="p-2 border rounded-md text-gray-400"
+            >
+              <option value="">Select Trip Type</option>
+              <option value="Expo">Expo</option>
+              <option value="Customer">Customer</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
 
           {/* Trip Purpose */}
-          <input
-            type="text"
-            name="tripPurpose"
-            placeholder="Trip Purpose"
-            value={tripData.tripPurpose}
-            onChange={handleInputChange}
-            className="p-2 border rounded-md  text-black"
-            required
-          />
+          <div className="flex items-center gap-2">
+            <label htmlFor="tripPurpose" className="text-gray-400">Trip Purpose</label>
+            <select
+              name="tripPurpose"
+              value={tripData.tripPurpose}
+              onChange={handleInputChange}
+              className="p-2 border rounded-md text-gray-400"
+            >
+              <option value="">Select Trip Purpose</option>
+              <option value="Sales">Sales</option>
+              <option value="Pre-Sales">Pre-Sales</option>
+              <option value="Implementation">Implementation</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Recovery">Recovery</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
 
           {/* Is International */}
           <div className="flex items-start gap-2">
@@ -303,7 +316,6 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             value={tripData.continent}
             onChange={handleInputChange}
             className="p-2 border rounded-md text-black"
-            required
           />
 
           {/* From Date */}

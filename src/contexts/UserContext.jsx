@@ -15,7 +15,7 @@ const UserContext = ({ children }) => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_BASE_URL}/api/employee/all`)
             if (response.status === 200) {
-                console.log(response.data);
+                // console.log(response.data);
             }
         }catch (err) {
             console.error("Trip Fetch Failed:", err.response ? err.response.data : err.message);

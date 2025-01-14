@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { DataContext } from "../contexts/UserContext";
 import ComponentLoader from "./ComponentLoader";
 
-const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
+const TeamMemberDetail = ({ empId, currencySymbol, tripId , billableLimit , exchangeRate}) => {
   const { getEmployeeById } = useContext(DataContext);
   const [empData, setEmpData] = useState(null);
   const [duesDetails, setDuesDetails] = useState([]); // To store the dues details
@@ -13,7 +13,7 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
 
   useEffect(() => {
     let isMounted = true; // To avoid state updates on unmounted components
-
+    // console.log(billableLimit , exchangeRate)
     const fetchData = async () => {
       try {
         const res = await getEmployeeById(empId, tripId);
@@ -33,6 +33,7 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
               });
             }
 
+            
             if (isMounted) {
               setDuesDetails(dues);
             }
@@ -71,7 +72,12 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId }) => {
           <h2 className="text-md font-medium">Name: {empData?.empName}</h2>
           <h2 className="text-md font-medium">Employee ID: {empData?.empId}</h2>
           <h2 className="text-md font-medium">Email: {empData?.email}</h2>
-          <h2 className="text-md font-medium">Employee Tier: {empData?.empTier}</h2>
+            <h2 className="text-md font-medium">Employee Tier: {empData?.empTier}</h2>
+            {(billableLimit != undefined) && (
+              <h2 className="text-md font-medium">
+                Billable Limit : {currencySymbol} {(billableLimit * exchangeRate).toFixed(2)}
+              </h2>
+            )}
           {empData?.totalFoodBill != null ? (
             <h2 className="text-md font-medium">
               Total Food Bill: {currencySymbol} {empData?.totalFoodBill}

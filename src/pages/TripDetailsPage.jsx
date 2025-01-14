@@ -36,21 +36,11 @@ const TripDetailsPage = () => {
     getTripDetail();
   }, [tripid, user, tripDetail, tripDetail?.exchangeRate]);
 
-  //   async function fetchData() {
-  //     const response = await axios.get(
-  //       `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/id/${tripid}`
-  //     );
-  //     if (response.status === 200) {
-  //       setTripDetail(response.data);
-  //       setLoading(false);
-  //     }
-  //   }
-  //   fetchData();
-  // }, [tripid, tripDetail?.bills]);
-
   const handleFormSubmit = async (formData) => {
     try {
       setLoading(true);
+
+      // Create bill API call
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/api/bills/create-bill/tripId/${tripid}`,
         formData,
@@ -62,34 +52,79 @@ const TripDetailsPage = () => {
       );
 
       if (response.status === 201) {
-        navigate(0);
-        setLoading(false);
         toast.success("Bill Created Successfully!", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+
+        // Fetch updated trip details
+        const tripResponse = await axios.get(
+          `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/id/${tripid}`
+        );
+
+        if (tripResponse.status === 200) {
+          setTripDetail(tripResponse.data); // Update trip details state
+        }
+
+        // Fetch the defaulter list
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/get-defaulter-list/tripId/${tripid}`
+        );
+
+        if (res.status === 200 && res.data.length > 0) {
+          // Create an array of promises for each toast message
+          const toastPromises = res.data.map((defaulter, index) => {
+            return new Promise((resolve) => {
+              setTimeout(() => {
+                toast.warning(
+                  `${defaulter.empName} has exceeded the billable limit by ${tripDetail?.currencySymbol} ${(defaulter.excessAmount * tripDetail?.exchangeRate).toFixed(2)}!`,
+                  {
+                    position: "top-right",
+                    autoClose: 7000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "colored",
+                    transition: Bounce,
+                  }
+                );
+                resolve(); // Resolve the promise after the toast message is shown
+              }, index * 2000); // Add a delay of 2 seconds between toasts
+            });
           });
+
+          // Wait for all toast messages to be shown before refreshing the page
+          await Promise.all(toastPromises);
+
+          // Refresh the page after all toasts are shown
+          setTimeout(() => {
+            navigate(0);
+          }, 7000); // Delay the page refresh to ensure the last toast message is shown
+        }
+
+        setLoading(false);
       } else {
         setLoading(false);
-        setTimeout(() => {
-          toast.error("Failed to create bill!", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "colored",
-            transition: Bounce,
-          });
-        }, 500);
+        toast.error("Failed to create bill!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
       }
     } catch (err) {
       setLoading(false);
@@ -110,7 +145,6 @@ const TripDetailsPage = () => {
       });
     }
   };
-
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp); // Convert the timestamp to a Date object
@@ -184,18 +218,18 @@ const TripDetailsPage = () => {
             </h1>
             <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-transparent"><i className='bx text-3xl sm:text-3xl text-[#000249] bx-refresh bx-tada text-center' ></i></button>
           </div>
-          <h3 className="text-lg text-[#000249] font-medium">
+          {tripDetail?.tripType && <h3 className="text-lg text-[#000249] font-medium">
             Type: {tripDetail?.tripType}
-          </h3>
-          <h3 className="text-lg text-[#000249] font-medium">
+          </h3>}
+         {tripDetail?.tripPurpose && <h3 className="text-lg text-[#000249] font-medium">
             Purpose: {tripDetail?.tripPurpose}
-          </h3>
+          </h3>}
           <h3 className="text-lg text-[#000249] font-medium">
             Country: {tripDetail?.country}
           </h3>
-          <h3 className="text-lg text-[#000249] font-medium">
+          {tripDetail?.continent && <h3 className="text-lg text-[#000249] font-medium">
             Continent: {tripDetail?.continent}
-          </h3>
+          </h3>}
           <h3 className="text-lg text-[#000249] font-medium">
             Trip Date: {tripDetail?.tripDate && formatDate(tripDetail.tripDate)}
           </h3>
@@ -228,6 +262,8 @@ const TripDetailsPage = () => {
                 empId={groupMemberId}
                 currencySymbol={tripDetail?.currencySymbol}
                 tripId={tripDetail.id}
+                billableLimit={(tripDetail?.billableLimits !== undefined) ? tripDetail?.billableLimits[groupMemberId] : 0}
+                exchangeRate={tripDetail?.exchangeRate}
               />
             ))}
           </div>
@@ -253,6 +289,7 @@ const TripDetailsPage = () => {
                 bill={bill}
                 currencySymbol={tripDetail?.currencySymbol}
                 tripId={tripDetail.id}
+                trip={tripDetail}
               />
             ))
           )}
