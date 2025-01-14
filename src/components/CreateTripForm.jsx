@@ -307,6 +307,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
           />
 
           {/* From Date */}
+          <div className="flex items-center gap-2">
+          <label className="text-gray-400">From Date:</label>
           <input
             type="date"
             name="fromDate"
@@ -316,7 +318,11 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             required
           />
 
+          </div>
+
           {/* To Date */}
+          <div className="flex items-center gap-2">
+          <label className="text-gray-400">To Date:</label>
           <input
             type="date"
             name="toDate"
@@ -325,6 +331,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             className="p-2 border rounded-md text-gray-400"
             required
           />
+
+          </div>
 
           {/* Real-Time Group Member Search */}
           <div className="relative">
