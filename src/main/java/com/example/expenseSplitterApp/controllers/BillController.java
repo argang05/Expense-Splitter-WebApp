@@ -99,7 +99,7 @@ public class BillController {
     }
 
     @DeleteMapping("/delete/billId/{bId}/tripId/{tId}")
-    public ResponseEntity<?> deleteBillEqualSplit(@PathVariable String bId, @PathVariable String tId){
+    public ResponseEntity<?> deleteBill(@PathVariable String bId, @PathVariable String tId){
         ObjectId billId = new ObjectId(bId);
         ObjectId tripId = new ObjectId(tId);
         BillsEntity bill = billRepository.findById(billId).orElse(null);
@@ -139,6 +139,34 @@ public class BillController {
             }
         }
         return null;
+    }
+
+    @PutMapping(value = "/update-bill/billId/{bId}/tripId/{tId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createBill(
+            @PathVariable String bId,
+            @PathVariable String tId,
+            @RequestPart("bill") String billJson,  // or use a specific DTO class
+            @RequestPart(value = "image", required = false) MultipartFile image
+    ) throws JsonProcessingException {
+        // Parse the JSON if it's a String (for example)
+        ObjectMapper objectMapper = new ObjectMapper();
+        BillsEntity updatedBill = objectMapper.readValue(billJson, BillsEntity.class);
+        try{
+            ObjectId billId = new ObjectId(bId);
+            ObjectId tripId = new ObjectId(tId);
+
+            // If an image is uploaded, handle it in the service
+            if (image != null && !image.isEmpty()) {
+                String imageUrl = billService.uploadImageToCloudinary(image);
+                updatedBill.setImageUrl(imageUrl); // Set the image URL in the bill
+            }
+
+            BillsEntity responseBill = billService.updateBill(updatedBill , billId, tripId);
+            return new ResponseEntity<>(responseBill , HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Unexpected Error While Creating Bill: ", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 }

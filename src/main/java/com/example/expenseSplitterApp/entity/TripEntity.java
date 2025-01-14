@@ -41,6 +41,8 @@ public class TripEntity {
 
     private Map<String , Map<String , Double>> dues = new HashMap<>();
 
+    private Map<String , Double> billableLimits = new HashMap<>();
+
     @DBRef
     private List<BillsEntity> bills = new ArrayList<>();
 }

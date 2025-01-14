@@ -141,4 +141,31 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/get-defaulter-list/tripId/{tId}")
+    public ResponseEntity<?> getDefaulterList(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            List<Map<String, Object>> defaulters = tripService.getDefaulters(tripId);
+            return new ResponseEntity<>(defaulters , HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Error Fetching Defaulters List");
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("delete-trip/{tId}")
+    public ResponseEntity<?> deleteTripById(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            boolean isDeleted = tripService.deleteTripAndBills(tripId);
+            if(isDeleted){
+                return new ResponseEntity<>("Trip Deleted",HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

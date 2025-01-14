@@ -644,9 +644,49 @@ public class BillService {
         return true; // Successful deletion
     }
 
+    public BillsEntity updateBill(BillsEntity updatedBill, ObjectId billId, ObjectId tripId) {
+        // Analyze the split type
+        boolean isSplit = updatedBill.getSplitBill();
+        boolean isSplitEqual = updatedBill.getSplitEqually();
+        String billType = updatedBill.getBillType();
 
+        // Delete the existing bill
+        boolean isDeleted = deleteExistingBill(billId, tripId, isSplit, isSplitEqual, billType);
+        if (!isDeleted) {
+            throw new RuntimeException("Failed to delete the existing bill");
+        }
 
+        // Create a new bill
+        return createNewBill(updatedBill, tripId, isSplit, isSplitEqual, billType);
+    }
 
+    private boolean deleteExistingBill(ObjectId billId, ObjectId tripId, boolean isSplit, boolean isSplitEqual, String billType) {
+        if ("food".equalsIgnoreCase(billType)) {
+            if (isSplit) {
+                return isSplitEqual
+                        ? deleteBillEqualSplit(billId, tripId)
+                        : deleteBillSplitUnequal(billId, tripId);
+            } else {
+                return deleteBillNoSplit(billId, tripId);
+            }
+        } else {
+            return deleteNonFoodBill(billId, tripId);
+        }
+    }
+
+    private BillsEntity createNewBill(BillsEntity bill, ObjectId tripId, boolean isSplit, boolean isSplitEqual, String billType) {
+        if ("food".equalsIgnoreCase(billType)) {
+            if (isSplit) {
+                return isSplitEqual
+                        ? createBillSplitEqual(bill, tripId)
+                        : createBillSplitUnequal(bill, tripId);
+            } else {
+                return createBillNoSplit(bill, tripId);
+            }
+        } else {
+            return createNonFoodBill(bill, tripId);
+        }
+    }
 
 
     public List<BillsEntity> getFoodBillsByEmpId(String empId){

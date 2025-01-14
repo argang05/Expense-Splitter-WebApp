@@ -68,19 +68,20 @@ public class ExpenseCalculatorUtil {
     public double calculatePerDiem(String tier, int days, TripEntity trip) {
         getExchangeRate(trip);
         double perDiemDayWiseRateUSD = perDiemRates.getOrDefault(tier, 0.0);
-        double perDiemDayWiseRateCurrency = perDiemDayWiseRateUSD * exchangeRate;
-        return perDiemDayWiseRateCurrency * days;
+//        double perDiemDayWiseRateCurrency = perDiemDayWiseRateUSD * exchangeRate;
+        return perDiemDayWiseRateUSD * days;
     }
 
     public double calculateBillableLimit(String tier, int days) {
         double billLimitsUSD = billLimits.getOrDefault(tier, 0.0);
-        double billLimitsCurrency = billLimitsUSD * exchangeRate;
-        return billLimitsCurrency * days;
+//        double billLimitsCurrency = billLimitsUSD * exchangeRate;
+        return billLimitsUSD * days;
     }
 
     public double calculateRemainingBalance(String tier, int days, double totalFoodBill) {
-        double billableLimit = calculateBillableLimit(tier, days);
-        return billableLimit - totalFoodBill;
+        double billableLimitUSD = calculateBillableLimit(tier, days);
+        double remainingBalanceUSD = billableLimitUSD - (totalFoodBill/exchangeRate);
+        return remainingBalanceUSD;
     }
 
 }
