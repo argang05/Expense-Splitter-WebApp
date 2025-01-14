@@ -603,6 +603,48 @@ public class BillService {
         return true;
     }
 
+    public boolean deleteNonFoodBill(ObjectId billId, ObjectId tripId) {
+        // Fetch the bill to be deleted
+        BillsEntity bill = billRepository.findById(billId).orElse(null);
+        if (bill == null) {
+            return false; // Bill not found
+        }
+
+        // Fetch the trip associated with the bill
+        TripEntity trip = tripRepository.findById(tripId).orElse(null);
+        if (trip != null && trip.getBills() != null) {
+            // Remove the bill from the trip's bill list
+            trip.getBills().removeIf(b -> b.getId().equals(billId));
+            tripRepository.save(trip); // Save updated trip
+        }
+
+        if (!bill.getSplitBill()) {
+            // Non-split bill: Remove it from the payer's bills
+            EmployeeEntity payer = employeeRepository.findByEmpId(bill.getBillPayer());
+            if (payer != null && payer.getBills() != null) {
+                payer.getBills().removeIf(b -> b.getId().equals(billId));
+                employeeRepository.save(payer); // Save updated payer
+            }
+        } else {
+            // Split bill: Remove from contributors' bills
+            if (bill.getContributorsIds() != null && !bill.getContributorsIds().isEmpty()) {
+                List<EmployeeEntity> contributors = employeeRepository.findByEmpIdIn(bill.getContributorsIds());
+                for (EmployeeEntity contributor : contributors) {
+                    if (contributor.getBills() != null) {
+                        contributor.getBills().removeIf(b -> b.getId().equals(billId));
+                    }
+                    employeeRepository.save(contributor); // Save updated contributor
+                }
+            }
+        }
+
+        // Delete the bill from the bill repository
+        billRepository.deleteById(billId);
+
+        return true; // Successful deletion
+    }
+
+
 
 
 

@@ -104,28 +104,37 @@ public class BillController {
         ObjectId tripId = new ObjectId(tId);
         BillsEntity bill = billRepository.findById(billId).orElse(null);
         if(bill != null){
-            if(bill.getSplitBill()){
-                if(bill.getSplitEqually()){
-                    boolean isDeleted = billService.deleteBillEqualSplit(billId,tripId);
-                    if(isDeleted){
-                        return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
-                    }else{
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                }else{
-                    boolean isDeleted = billService.deleteBillSplitUnequal(billId,tripId);
-                    if(isDeleted){
-                        return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
-                    }else{
-                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
-                }
-            }else{
-                boolean isDeleted = billService.deleteBillNoSplit(billId,tripId);
+            if(!(bill.getBillType().equalsIgnoreCase("Food"))){
+                boolean isDeleted = billService.deleteNonFoodBill(billId,tripId);
                 if(isDeleted){
                     return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
                 }else{
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }else{
+                if(bill.getSplitBill()){
+                    if(bill.getSplitEqually()){
+                        boolean isDeleted = billService.deleteBillEqualSplit(billId,tripId);
+                        if(isDeleted){
+                            return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                        }else{
+                            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                    }else{
+                        boolean isDeleted = billService.deleteBillSplitUnequal(billId,tripId);
+                        if(isDeleted){
+                            return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                        }else{
+                            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                        }
+                    }
+                }else{
+                    boolean isDeleted = billService.deleteBillNoSplit(billId,tripId);
+                    if(isDeleted){
+                        return new ResponseEntity<>("Bill Deleted",HttpStatus.OK);
+                    }else{
+                        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                    }
                 }
             }
         }
