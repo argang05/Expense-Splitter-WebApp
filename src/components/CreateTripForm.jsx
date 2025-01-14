@@ -159,7 +159,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     if (isInternationalText === "No") {
       setTripData((prevData) => ({ ...prevData, isInternational: false }));
     }
-    const numberOfDays = calculateNumberOfDays();
+    let numberOfDays = calculateNumberOfDays();
+    numberOfDays = numberOfDays + 1;
     if (numberOfDays <= 0) {
     setBtnLoading(false)
     toast.error("Please select a valid date range.", {
