@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,19 +47,26 @@ public class BillService {
     @Autowired
     private TripService tripService;
 
+    @Autowired
+    private ImageCompressionService imageCompressionService;
+
     public List<BillsEntity> getFoodBillsByTripId(ObjectId tripId){
         return billRepositoryImpl.getFoodBillsByTripId(tripId);
     }
 
+
     public String uploadImageToCloudinary(MultipartFile image) {
         try {
+            MultipartFile compressedImage = imageCompressionService.compressImage(image);
             // Use Cloudinary SDK to upload the image and return the URL
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(compressedImage.getBytes(), ObjectUtils.emptyMap());
             return (String) uploadResult.get("secure_url"); // Return the secure URL of the image
         } catch (Exception e) {
             throw new RuntimeException("Error uploading image to Cloudinary", e);
         }
     }
+
+
 
     public BillsEntity createBillSplitEqual(BillsEntity bill, ObjectId tripId) {
         bill.setTripId(tripId);
