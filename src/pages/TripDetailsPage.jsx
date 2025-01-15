@@ -109,6 +109,10 @@ const TripDetailsPage = () => {
           setTimeout(() => {
             navigate(0);
           }, 7000); // Delay the page refresh to ensure the last toast message is shown
+        } else {
+          setTimeout(() => {
+            navigate(0);
+          },3000)
         }
 
         setLoading(false);
@@ -144,6 +148,10 @@ const TripDetailsPage = () => {
         transition: Bounce,
       });
     }
+  };
+
+    const formatContinentName = (name) => {
+    return name.replace(/([a-z])([A-Z])/g, "$1 $2");
   };
 
   const formatDate = (timestamp) => {
@@ -224,12 +232,12 @@ const TripDetailsPage = () => {
          {tripDetail?.tripPurpose && <h3 className="text-lg text-[#000249] font-medium">
             Purpose: {tripDetail?.tripPurpose}
           </h3>}
+          {tripDetail?.continent && <h3 className="text-lg text-[#000249] font-medium">
+            Continent: {formatContinentName(tripDetail?.continent)}
+          </h3>}
           <h3 className="text-lg text-[#000249] font-medium">
             Country: {tripDetail?.country}
           </h3>
-          {tripDetail?.continent && <h3 className="text-lg text-[#000249] font-medium">
-            Continent: {tripDetail?.continent}
-          </h3>}
           <h3 className="text-lg text-[#000249] font-medium">
             Trip Date: {tripDetail?.tripDate && formatDate(tripDetail.tripDate)}
           </h3>

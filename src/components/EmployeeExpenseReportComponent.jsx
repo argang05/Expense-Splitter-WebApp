@@ -117,7 +117,7 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
           </h3>
               :
               <h3 className="text-lg text-[#000249] font-medium">
-            Total Remaining Balance: {empExpenceReport?.currencySymbol}{' '}
+            Total Remaining Balance: USD{' '}
             {empExpenceReport?.remainingBalanceTotal}
           </h3>}
           <div>

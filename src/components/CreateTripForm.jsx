@@ -5,6 +5,7 @@ import axios from "axios";
 import { DataContext } from "../contexts/UserContext";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { isAdmin } from "../config/adminConfig";
+import { continentCountryMap } from "../utils/ContinentCountryMap";
 
 const CreateTripForm = ({ onClose, onSubmit }) => {
 
@@ -65,6 +66,25 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     setTripData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+   // Handle continent selection
+  const handleContinentChange = (e) => {
+    const selectedContinent = e.target.value;
+    setTripData((prevData) => ({
+      ...prevData,
+      continent: selectedContinent,
+      country: "", // Reset country when continent changes
+    }));
+  };
+
+  // Handle country selection
+  const handleCountryChange = (e) => {
+    const selectedCountry = e.target.value;
+    setTripData((prevData) => ({
+      ...prevData,
+      country: selectedCountry,
     }));
   };
 
@@ -156,9 +176,6 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     return;
   }
 
-    if (isInternationalText === "No") {
-      setTripData((prevData) => ({ ...prevData, isInternational: false }));
-    }
     let numberOfDays = calculateNumberOfDays();
     numberOfDays = numberOfDays + 1;
     if (numberOfDays <= 0) {
@@ -220,6 +237,11 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
     });
   };
 
+    // Format the continent name by adding a space between uppercase words
+  const formatContinentName = (name) => {
+    return name.replace(/([a-z])([A-Z])/g, "$1 $2");
+  };
+
   return (
 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div className="mt-32 bg-white p-8 rounded-lg w-[90%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto">
@@ -271,53 +293,46 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             </select>
           </div>
 
-          {/* Is International */}
-          <div className="flex items-start gap-2">
-            <label className="text-gray-400">Is International?: </label>
-            <label className="text-gray-400">
-              <input
-                type="radio"
-                name="isInternationalYes"
-                value="Yes"
-                checked={isInternationalText === "Yes"}
-                onChange={(e) => setIsInternationalText(e.target.value)}
-                className="p-2 border rounded-md"
-              />
-              Yes
-            </label>
-            <label className="text-gray-400">
-              <input
-                type="radio"
-                name="isInternationalNo"
-                value="No"
-                checked={isInternationalText === "No"}
-                onChange={(e) => setIsInternationalText(e.target.value)}
-                className="p-2 border rounded-md"
-              />
-              No
-            </label>
+          {/* Continent Dropdown */}
+          <div className="flex items-center gap-2">
+            <label htmlFor="tripPurpose" className="text-gray-400">Trip Continent:</label>
+          <select
+            name="continent"
+            value={tripData.continent}
+            onChange={handleContinentChange}
+            className="p-2 border rounded-md text-black"
+            required
+          >
+            <option value="">Select Continent</option>
+            {Object.keys(continentCountryMap).map((continent) => (
+              <option key={continent} value={continent}>
+                {formatContinentName(continent)}
+              </option>
+            ))}
+          </select>
+
           </div>
 
-          {/* Country */}
-          <input
-            type="text"
+          {/* Country Dropdown */}
+          <div className="flex items-center gap-2">
+          <label htmlFor="tripPurpose" className="text-gray-400">Trip Continent:</label>
+          <select
             name="country"
-            placeholder="Country"
             value={tripData.country}
-            onChange={handleInputChange}
-            className="p-2 border rounded-md  text-black"
-            required
-          />
-
-          {/* Continent */}
-          <input
-            type="text"
-            name="continent"
-            placeholder="Continent"
-            value={tripData.continent}
-            onChange={handleInputChange}
+            onChange={handleCountryChange}
             className="p-2 border rounded-md text-black"
-          />
+            required
+            disabled={!tripData.continent} // Disable if no continent selected
+          >
+            <option value="">Select Country</option>
+            {tripData.continent &&
+              continentCountryMap[tripData.continent].map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+              ))}
+          </select>
+          </div>
 
           {/* From Date */}
           <div className="flex items-center gap-2">

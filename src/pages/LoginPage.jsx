@@ -1,29 +1,29 @@
 /* eslint-disable no-unused-vars */
-import React, { useContext, useEffect, useState } from 'react'
-import { DataContext } from '../contexts/UserContext';
-import { Navigate, NavLink, useNavigate } from 'react-router-dom';
-import HomePage from './HomePage';
-import Loader from '../components/Loader';
-import { ToastContainer, toast, Bounce } from 'react-toastify';
+import React, { useContext, useState } from "react";
+import { DataContext } from "../contexts/UserContext";
+import { NavLink, useNavigate } from "react-router-dom";
+import Loader from "../components/Loader";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing eye icons
 
 const LoginPage = () => {
-
   const navigate = useNavigate();
 
-  const { handleLogin, loggedIn, user } = useContext(DataContext);
+  const { handleLogin } = useContext(DataContext);
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false); // State to toggle password visibility
 
   const [userData, setUserData] = useState({
     empId: "",
-    password: ""
+    password: "",
   });
 
   const handleSubmit = async (e) => {
-    setLoading(true)
+    setLoading(true);
     e.preventDefault();
     const response = await handleLogin(userData);
     if (response === "User LoggedIn") {
-      setLoading(false)
+      setLoading(false);
       toast.success(response, {
         position: "top-right",
         autoClose: 5000,
@@ -36,10 +36,10 @@ const LoginPage = () => {
         transition: Bounce,
       });
       setTimeout(() => {
-        navigate("/")
-      },700)
+        navigate("/");
+      }, 700);
     } else {
-      setLoading(false)
+      setLoading(false);
       toast.error("Incorrect Username Or Password!", {
         position: "top-right",
         autoClose: 5000,
@@ -52,57 +52,92 @@ const LoginPage = () => {
         transition: Bounce,
       });
     }
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
-      ...prevData,  // Spread previous state
-      [name]:value // Dynamically update the changed field
-    }))
-  }
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
   return (
     <>
-      {loading && <Loader/>}
-        <div className='main-container bg-[#111111] h-screen w-100 flex items-center justify-center'>
-          <form
-        className='flex flex-col align-center bg-[#000249] gap-5 border-2 border-[#03abff] w-[80%] sm:w-[40%] h-[auto] p-5 rounded-lg'
-        onSubmit={(e) => { handleSubmit(e) }}
+      {loading && <Loader />}
+      <div className="main-container bg-[#111111] h-screen w-100 flex items-center justify-center">
+        <form
+          className="flex flex-col align-center bg-[#000249] gap-5 border-2 border-[#03abff] w-[80%] sm:w-[40%] h-[auto] p-5 rounded-lg"
+          onSubmit={(e) => {
+            handleSubmit(e);
+          }}
+        >
+          <h2 className="text-2xl font-bold self-center">Sign In</h2>
+          <label className="text-lg font-bold">Employee ID:</label>
+          <input
+            className="bg-[#F3F3F3] text-[#000249] border-2 border-[#03abff] rounded-xl p-2"
+            type="text"
+            name="empId"
+            placeholder="Enter Employee ID..."
+            required
+            value={userData.empId}
+            onChange={(e) => {
+              handleChange(e);
+            }}
+          />
+          <label className="text-lg font-bold">Password:</label>
+          <div className="relative">
+            <input
+              className="bg-[#F3F3F3] text-[#000249] border-2 border-[#03abff] rounded-xl p-2 w-full"
+              type={passwordVisible ? "text" : "password"}
+              name="password"
+              placeholder="Enter Password..."
+              required
+              value={userData.password}
+              onChange={(e) => {
+                handleChange(e);
+              }}
+            />
+            <span
+              className="absolute right-3 top-3 text-[#000249] cursor-pointer"
+              onClick={togglePasswordVisibility}
+            >
+              {passwordVisible ? <FaEyeSlash size={20} /> : <FaEye size={20} />}
+            </span>
+          </div>
+          <button
+            className="bg-[#F6490D] text-white font-bold rounded-lg p-2"
+            type="submit"
           >
-              <h2 className='text-2xl font-bold self-center'>Sign In</h2>
-              <label className='text-lg font-bold'>Employee ID:</label>
-              <input
-                  className='bg-[#F3F3F3] text-[#000249] border-2 border-[#03abff] rounded-xl p-2' type='text' name='empId' placeholder='Enter Employee ID...' required 
-                  value={userData.empId}
-                  onChange={(e) => {handleChange(e)}}
-                  />
-              <label className='text-lg font-bold'>Password:</label>
-              <input
-                  className='bg-[#F3F3F3] text-[#000249] border-2 border-[#03abff] rounded-xl p-2' type='password' name='password' placeholder='Enter Password...' required
-                  value={userData.password}
-                  onChange={(e) => {handleChange(e)}}          
-                  />
-          <button className='bg-[#F6490D] text-white font-bold rounded-lg p-2' type="submit">Login</button>
-          <span className='text-white text-center font-semibold text-md'>Don&#39;t have an Account ? <NavLink to="/register" className="text-[#F6490D]">Register!</NavLink></span>
+            Login
+          </button>
+          <span className="text-white text-center font-semibold text-md">
+            Don&#39;t have an Account ?{" "}
+            <NavLink to="/register" className="text-[#F6490D]">
+              Register!
+            </NavLink>
+          </span>
         </form>
       </div>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-          transition={Bounce}
-          />
-      </>
-  )
-}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Bounce}
+      />
+    </>
+  );
+};
 
 export default LoginPage;
