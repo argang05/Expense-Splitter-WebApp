@@ -16,7 +16,7 @@ public class ImageCompressionService {
     public MultipartFile compressImage(MultipartFile image) {
         try {
             // Check original file size
-            final long maxSizeInBytes = 10 * 1024 * 1024; // 10MB
+            final long maxSizeInBytes = 11 * 1024 * 1024; // 10MB
             if (image.getSize() <= maxSizeInBytes) {
                 return image; // No compression needed
             }

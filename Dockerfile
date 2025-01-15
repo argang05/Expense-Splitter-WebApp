@@ -24,5 +24,5 @@ COPY --from=build /app/target/expenseSplitterApp-0.0.1-SNAPSHOT.jar .
 # Expose port 8080
 EXPOSE 8080
 
-# Specify the command to run the application
-ENTRYPOINT ["java", "-jar", "/app/expenseSplitterApp-0.0.1-SNAPSHOT.jar"]
+# Specify the command to run the application with increased heap size
+ENTRYPOINT ["java", "-Xms512m", "-Xmx2g", "-jar", "/app/expenseSplitterApp-0.0.1-SNAPSHOT.jar"]
