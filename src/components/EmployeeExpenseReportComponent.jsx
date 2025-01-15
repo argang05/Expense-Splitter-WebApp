@@ -4,7 +4,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import ComponentLoader from './ComponentLoader';
 
-const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
+const EmployeeExpenseReportComponent = ({ empExpenceReport , exchangeRate }) => {
   const [payeeNames, setPayeeNames] = useState({});
   const [loading, setLoading] = useState(true);
 
@@ -20,7 +20,12 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
     }
   };
 
+  // useEffect(() => {
+  //   console.log(empExpenceReport);
+  // },[])
+
   useEffect(() => {
+    
     // Fetch payee names if dues exist
     const fetchPayeeNames = async () => {
       if (empExpenceReport?.dues && Object.keys(empExpenceReport.dues).length > 0) {
@@ -100,11 +105,11 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport }) => {
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
             Total Food Bill: USD{' '}
-            {empExpenceReport?.totalFoodBill}
+            {(empExpenceReport?.totalFoodBill / exchangeRate).toFixed(2)}
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
-            Total Per Diem Cost: USD{' '}
-            {empExpenceReport?.perDiemTotal}
+            Total Non Food Bill: USD{' '}
+            {(empExpenceReport?.totalNonFoodBill / exchangeRate).toFixed(2)}
           </h3>
           <h3 className="text-lg text-[#000249] font-medium">
             Total Billable Limit: USD{' '}

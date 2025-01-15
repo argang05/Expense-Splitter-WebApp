@@ -9,6 +9,8 @@ import Loader from '../components/Loader';
 import CreateBillForm from '../components/CreateBillForm';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { isAdmin } from '../config/adminConfig';
+import UpdateBillForm from '../components/UpdateBillForm';
+import UpdateTripForm from '../components/UpdateTripForm';
 
 const TripDetailsPage = () => {
   const { tripid } = useParams();
@@ -21,6 +23,7 @@ const TripDetailsPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [exchangeRateFormVisible, setExchangeRateFormVisible] = useState(false);
   const [newExchangeRate, setNewExchangeRate] = useState("");
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
 
   useEffect(() => {
     setEmployee(user);
@@ -204,6 +207,51 @@ const TripDetailsPage = () => {
     }
   };
 
+  const onTripUpdateFormSubmit = async (updatedTripData) => {
+    try {
+      setLoading(true);
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/update-trip/${tripid}`,
+        updatedTripData
+      );
+      if (response.status === 201) {
+        setLoading(false);
+        toast.success("Trip Updated Successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setTimeout(() => {
+          navigate(0);
+        }, 6000);
+      }
+    }
+    catch (err) {
+      setLoading(false);
+      console.error(
+        "Failed to update trip:",
+        err.response ? err.response.data : err.message
+      );
+      toast.error("An error occurred while updating trip!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+    }
+  }
+
   return (
     <>
       {loading && <Loader />}
@@ -224,7 +272,9 @@ const TripDetailsPage = () => {
             <h1 className="text-3xl font-bold text-[#000249]">
               {tripDetail?.tripName.toUpperCase()}:
             </h1>
-            <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-transparent"><i className='bx text-3xl sm:text-3xl text-[#000249] bx-refresh bx-tada text-center' ></i></button>
+            <div className='flex items-center justify-center'>
+              <button onClick={()=>{navigate(0)}} className="scale-out rounded-[50%] h-[40px] w-[55px] sm:h-[50px] sm:w-[50px] cursor-pointer text-center font-semibold bg-transparent"><i className='bx text-3xl sm:text-3xl text-[#000249] bx-refresh bx-tada text-center' ></i></button>
+            </div>
           </div>
           {tripDetail?.tripType && <h3 className="text-lg text-[#000249] font-medium">
             Type: {tripDetail?.tripType}

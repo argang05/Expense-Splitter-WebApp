@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
+// eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { DataContext } from "../contexts/UserContext";
@@ -7,25 +8,25 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import { isAdmin } from "../config/adminConfig";
 import { continentCountryMap } from "../utils/ContinentCountryMap";
 
-const CreateTripForm = ({ onClose, onSubmit }) => {
+const UpdateTripForm = ({ trip , onClose , onTripUpdateFormSubmit }) => {
 
   const { user } = useContext(DataContext);
-  const [showConfirmation, setShowConfirmation] = useState(false); // State to control confirmation overlay
-  const [tripData, setTripData] = useState({
-    tripName: "",
-    tripType: "",
-    tripPurpose: "",
+
+    const [tripData, setTripData] = useState({
+    tripName: trip?.tripName,
+    tripType: trip?.tripType,
+    tripPurpose: trip?.tripPurpose,
     isInternational: true,
-    continent: "",
-    country: "",
-    groupMembersIds: [],
-    tripDate:""
+    continent: trip?.continent,
+    country: trip?.country,
+    groupMembersIds: (trip?.groupMembersIds.length > 0 ? trip?.groupMembersIds : []),
+    tripDate: new Date(trip?.tripDate).toISOString().split("T")[0],
   });
 
   const [tripDateLocal, setTripDateLocal] = useState({
-        fromDate: "",
-        toDate: "",
-  })
+        fromDate: new Date(trip?.tripDate).toISOString().split("T")[0],
+        toDate: new Date(trip?.tripDate + ((trip?.numberOfDays || 0) - 1) * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    });
 
   const [isInternationalText, setIsInternationalText] = useState("");
   const [employeeList, setEmployeeList] = useState([]);
@@ -219,8 +220,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
       numberOfDays,
     };
     setBtnLoading(false)
-    console.log("FinalData: ",finalData)
-    onSubmit(finalData);
+    console.log("FinalData: ",JSON.stringify(finalData))
+    onTripUpdateFormSubmit(finalData);
     onClose(); // Close the form after submission
     // Provide success feedback
     toast.success("Trip successfully added!", {
@@ -245,12 +246,8 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
   return (
 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
   <div className="mt-32 bg-white p-8 rounded-lg w-[90%] sm:w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-[#000249] mb-5">Add New Trip</h2>
-        <form onSubmit={(e) => {
-            e.preventDefault();
-            setShowConfirmation(true);}} // Show confirmation overlay on submit
-          className="flex flex-col gap-4"
-        >
+        <h2 className="text-2xl font-bold text-[#000249] mb-5">Update Trip</h2>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Trip Name */}
           <input
             type="text"
@@ -415,7 +412,7 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             ))}
           </div>
 
-           {/* Buttons */}
+          {/* Buttons */}
           <div className="flex justify-between">
             <button type="button" onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded-md">
               Cancel
@@ -425,34 +422,6 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
             </button>
           </div>
         </form>
-        {/* Confirmation Overlay */}
-        {showConfirmation && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-md w-96 shadow-lg flex flex-col items-center gap-4">
-              <h2 className="text-xl text-center text-[#000249] font-bold">Are You Sure You Want to Submit the Form?</h2>
-              <p className="text-sm text-center text-gray-600">
-                Once any bill is uploaded/attached to the trip, the trip update feature will be blocked.
-              </p>
-              <div className="flex gap-4">
-                <button
-                  onClick={(e) => {
-                    setShowConfirmation(false);
-                    handleSubmit(e);
-                  }}
-                  className="bg-green-500 text-white px-4 py-2 rounded-md"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setShowConfirmation(false)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
-                >
-                  No
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
       <ToastContainer
             position="top-right"
@@ -472,4 +441,4 @@ const CreateTripForm = ({ onClose, onSubmit }) => {
   );
 };
 
-export default CreateTripForm;
+export default UpdateTripForm;

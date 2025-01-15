@@ -7,6 +7,7 @@ import EmployeeExpenseReportComponent from '../components/EmployeeExpenseReportC
 const EmployeeExpenseReportPage = () => {
     const { tripId } = useParams();
     const [empExpenceReportList, setEmpExpenceReportList] = useState(null);
+    const [exchangeRate, setExchangeRate] = useState(0.0);
     useEffect(() => {
         const getAllEmployeeExpenseReport = async () => {
             try {
@@ -38,8 +39,8 @@ const EmployeeExpenseReportPage = () => {
               <span className='text-sm font-semibold text-[#000249] text-start'> Employee Expense Report</span>
           </div>
           <div className='flex flex-col items-center justify-center w-full'>
-              {empExpenceReportList?.map((empExpenceReport) => (
-                  <EmployeeExpenseReportComponent key={empExpenceReport.empId} empExpenceReport={empExpenceReport}/>
+              {empExpenceReportList?.employeeFinalExpenseReportDTOList?.map((empExpenceReport) => (
+                  <EmployeeExpenseReportComponent key={empExpenceReport.empId} empExpenceReport={empExpenceReport} exchangeRate={empExpenceReportList.exchangeRate} />
               ))}
           </div>
       </div>

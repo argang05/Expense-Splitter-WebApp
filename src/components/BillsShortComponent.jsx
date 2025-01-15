@@ -139,13 +139,14 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
           transition: Bounce,
         });
       }
-    } catch (err) {
+    }
+    catch (err) {
       setPageLoading(false);
       console.error(
         "Failed to update bill:",
         err.response ? err.response.data : err.message
       );
-      toast.error("An error occurred while creating the bill!", {
+      toast.error("An error occurred while updating the bill!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
