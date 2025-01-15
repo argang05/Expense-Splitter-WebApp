@@ -25,4 +25,4 @@ COPY --from=build /app/target/expenseSplitterApp-0.0.1-SNAPSHOT.jar .
 EXPOSE 8080
 
 # Specify the command to run the application with increased heap size
-ENTRYPOINT ["java", "-Xms512m", "-Xmx2g", "-jar", "/app/expenseSplitterApp-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/expenseSplitterApp-0.0.1-SNAPSHOT.jar"]

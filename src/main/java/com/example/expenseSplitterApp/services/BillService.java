@@ -54,12 +54,15 @@ public class BillService {
         return billRepositoryImpl.getFoodBillsByTripId(tripId);
     }
 
+    public List<BillsEntity> getNonFoodBillsByTripId(ObjectId tripId){
+        return billRepositoryImpl.getNonFoodBillsByTripId(tripId);
+    }
+
 
     public String uploadImageToCloudinary(MultipartFile image) {
         try {
-            MultipartFile compressedImage = imageCompressionService.compressImage(image);
             // Use Cloudinary SDK to upload the image and return the URL
-            Map<?, ?> uploadResult = cloudinary.uploader().upload(compressedImage.getBytes(), ObjectUtils.emptyMap());
+            Map<?, ?> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
             return (String) uploadResult.get("secure_url"); // Return the secure URL of the image
         } catch (Exception e) {
             throw new RuntimeException("Error uploading image to Cloudinary", e);

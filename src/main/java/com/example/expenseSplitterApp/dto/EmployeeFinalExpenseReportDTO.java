@@ -19,6 +19,7 @@ public class EmployeeFinalExpenseReportDTO {
     private String empTier;
     private Double totalFoodBill;
     private double perDiemTotal;
+    private double totalNonFoodBill;
     private double billableLimitTotal;
     private double remainingBalanceTotal;
     private String currencySymbol;

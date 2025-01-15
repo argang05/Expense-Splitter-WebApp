@@ -43,6 +43,22 @@ public class BillController {
         }
     }
 
+    @GetMapping("non-food/tripId/{id}")
+    public ResponseEntity<?> getNonFoodBillsByTripId(@PathVariable String id){
+        try{
+            ObjectId tripId = new ObjectId(id);
+            List<BillsEntity> foodBills = billService.getNonFoodBillsByTripId(tripId);
+            if(foodBills != null && !foodBills.isEmpty()){
+                return new ResponseEntity<>(foodBills, HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("No Bills Found!",HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.error("Unexpected Error While Getting Bills by tripid: ",e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/empId/{empId}")
     public ResponseEntity<?> getFoodBillsByEmpId(@PathVariable String empId){
         try{

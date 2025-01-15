@@ -6,10 +6,7 @@ import com.example.expenseSplitterApp.entity.BillsEntity;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.entity.ExchangeRateEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
-import com.example.expenseSplitterApp.repositories.BillRepository;
-import com.example.expenseSplitterApp.repositories.EmployeeRepository;
-import com.example.expenseSplitterApp.repositories.TripRepository;
-import com.example.expenseSplitterApp.repositories.TripRepositoryImpl;
+import com.example.expenseSplitterApp.repositories.*;
 import com.example.expenseSplitterApp.utils.ExchangeRateGetterUtil;
 import com.example.expenseSplitterApp.utils.ExpenseCalculatorUtil;
 import com.mongodb.DBRef;
@@ -50,6 +47,9 @@ public class TripService {
 
     @Autowired
     private BillRepository billRepository;
+
+    @Autowired
+    private BillRepositoryImpl billRepositoryImpl;
 
     public List<TripEntity> getAllTrips(String empId) {
         if(adminConfig.getAdminEmpIds().contains(empId)){
@@ -104,9 +104,12 @@ public class TripService {
         List<EmployeeEntity> groupMembers = employeeService.getAllWithEmpIds(trip.getGroupMembersIds());
         if (groupMembers != null && !groupMembers.isEmpty()) {
             List<EmployeeFinalExpenseReportDTO> employeeFinalExpenseReportDTOList = new ArrayList<>();
+            // Fetch non-food bills for the trip
+            List<BillsEntity> nonFoodBills = billRepositoryImpl.getNonFoodBillsByTripId(tripId);
             int numberOfDays = trip.getNumberOfDays();
             for (EmployeeEntity groupMember : groupMembers) {
                 String empTier = groupMember.getEmpTier();
+                String empId = groupMember.getEmpId();
                 Double perDiemTotalCurrency = expenseCalculatorUtil.calculatePerDiem(empTier, numberOfDays, trip);
                 Double billableLimitTotalCurency = expenseCalculatorUtil.calculateBillableLimit(empTier, numberOfDays);
                 Double remainingBalanceCurrency = expenseCalculatorUtil.calculateRemainingBalance(
@@ -117,6 +120,25 @@ public class TripService {
                 Double billableLimitTotal = Math.round(billableLimitTotalCurency * 100.0) / 100.0;
                 Double remainingBalance = Math.round(remainingBalanceCurrency * 100.0) / 100.0;
 
+                double totalNonFoodBillShare = nonFoodBills.stream()
+                        .filter(bill -> {
+                            // Check if the employee is a contributor or is the bill payer when `contributerShare` is empty
+                            return bill.getContributorsIds().contains(empId) ||
+                                    (bill.getContributerShare().isEmpty() && empId.equals(bill.getBillPayer()));
+                        })
+                        .mapToDouble(bill -> {
+                            if (bill.getContributerShare().isEmpty()) {
+                                // Add the full bill amount if `contributerShare` is empty and the employee is the bill payer
+                                return empId.equals(bill.getBillPayer()) ? bill.getBillAmt() : 0.0;
+                            } else {
+                                // Otherwise, add the employee's share
+                                return bill.getContributerShare().getOrDefault(empId, 0.0);
+                            }
+                        })
+                        .sum();
+
+                totalNonFoodBillShare = Math.round(totalNonFoodBillShare * 100.0) / 100.0;
+
                 //Form the EmployeeFinalExpenseReportDTO
                 EmployeeFinalExpenseReportDTO empExpRepDto = new EmployeeFinalExpenseReportDTO();
                 empExpRepDto.setEmpId(groupMember.getEmpId());
@@ -126,6 +148,7 @@ public class TripService {
                 empExpRepDto.setCurrencySymbol(trip.getCurrencySymbol());
                 empExpRepDto.setTotalFoodBill(trip.getTotalFoodBill().getOrDefault(groupMember.getEmpId(),0.0));
                 empExpRepDto.setPerDiemTotal(perDiemTotal);
+                empExpRepDto.setTotalNonFoodBill(totalNonFoodBillShare);
                 empExpRepDto.setBillableLimitTotal(billableLimitTotal);
                 empExpRepDto.setRemainingBalanceTotal(remainingBalance);
                 empExpRepDto.setDues(trip.getDues());
@@ -138,6 +161,7 @@ public class TripService {
         }
         return null;
     }
+
 
     public Boolean updateExchangeRate(String empId, ExchangeRateEntity exchangeRateEntity, ObjectId tripId){
         if(adminConfig.getAdminEmpIds().contains(empId)){
@@ -199,8 +223,6 @@ public class TripService {
 
     }
 
-
-    @Transactional
     public boolean deleteTripAndBills(ObjectId tripId) {
         // First, fetch the trip entity using the tripId
         Optional<TripEntity> trip = tripRepository.findById(tripId);
@@ -215,6 +237,20 @@ public class TripService {
             log.error("No Trip Found!");
             return false;
         }
+    }
+
+    public boolean updateTrip(ObjectId tripId, TripEntity updatedTrip) {
+        // Step 1: Delete the existing trip by tripId
+        boolean isDeleted = deleteTripAndBills(tripId);
+
+        // Step 2: Check if the trip was successfully deleted
+        if (!isDeleted) {
+            throw new RuntimeException("Failed to delete the existing trip with tripId: " + tripId);
+        }
+
+        // Step 3: Save the updated trip details
+        saveNewTrip(updatedTrip);
+        return true;
     }
 
 }

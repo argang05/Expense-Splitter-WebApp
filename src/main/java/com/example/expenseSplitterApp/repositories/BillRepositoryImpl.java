@@ -36,5 +36,16 @@ public class BillRepositoryImpl {
         return foodBills;
     }
 
+    public List<BillsEntity> getNonFoodBillsByTripId(ObjectId tripId){
+        Query query = new Query();
+
+        query.addCriteria(Criteria.where("billType").ne("food"));
+        query.addCriteria(Criteria.where("tripId").is(tripId));
+
+        List<BillsEntity> nonFoodBills = mongoTemplate.find(query, BillsEntity.class);
+
+        return nonFoodBills;
+    }
+
 
 }

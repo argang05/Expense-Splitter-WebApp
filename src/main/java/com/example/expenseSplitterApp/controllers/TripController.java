@@ -1,6 +1,7 @@
 package com.example.expenseSplitterApp.controllers;
 
 import com.example.expenseSplitterApp.dto.EmployeeEntityDTO;
+import com.example.expenseSplitterApp.dto.EmployeeExpenseDetailDTOWithExchangeRate;
 import com.example.expenseSplitterApp.dto.EmployeeFinalExpenseReportDTO;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.entity.ExchangeRateEntity;
@@ -113,10 +114,14 @@ public class TripController {
     public ResponseEntity<?> getEmployeesFullExpenseReport(@PathVariable String id){
         try{
             ObjectId tripId = new ObjectId(id);
+            TripEntity trip = tripService.getTripById(tripId);
             List<EmployeeFinalExpenseReportDTO> employeeFinalExpenseReportDTOList =
                     tripService.getEmployeesFullExpenseReport(tripId);
+            EmployeeExpenseDetailDTOWithExchangeRate employeeExpenseDetailDTOWithExchangeRate = new EmployeeExpenseDetailDTOWithExchangeRate();
+            employeeExpenseDetailDTOWithExchangeRate.setEmployeeFinalExpenseReportDTOList(employeeFinalExpenseReportDTOList);
+            employeeExpenseDetailDTOWithExchangeRate.setExchangeRate(trip.getExchangeRate());
             if(employeeFinalExpenseReportDTOList != null && !employeeFinalExpenseReportDTOList.isEmpty()){
-                return new ResponseEntity<>(employeeFinalExpenseReportDTOList,HttpStatus.OK);
+                return new ResponseEntity<>(employeeExpenseDetailDTOWithExchangeRate,HttpStatus.OK);
             }else{
                 return new ResponseEntity<>("Couldn't Generate Employees Report",HttpStatus.NOT_FOUND);
             }
@@ -154,7 +159,7 @@ public class TripController {
         }
     }
 
-    @DeleteMapping("delete-trip/{tId}")
+    @DeleteMapping("/delete-trip/{tId}")
     public ResponseEntity<?> deleteTripById(@PathVariable String tId){
         try{
             ObjectId tripId = new ObjectId(tId);
@@ -163,6 +168,21 @@ public class TripController {
                 return new ResponseEntity<>("Trip Deleted",HttpStatus.OK);
             }else{
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update-trip/{tId}")
+    public ResponseEntity<?> updateTripByTripId(@PathVariable String tId , @RequestBody TripEntity trip){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            boolean isUpdated = tripService.updateTrip(tripId,trip);
+            if(isUpdated){
+                return new ResponseEntity<>("Trip Updated Successfully",HttpStatus.CREATED);
+            }else{
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
