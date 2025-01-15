@@ -84,7 +84,7 @@ const TeamMemberDetail = ({ empId, currencySymbol, tripId , billableLimit , exch
                 Total Food Bill: {currencySymbol} {(empData?.totalFoodBill.toFixed(2))}{" "}
             </h2>
               {((((billableLimit * exchangeRate) - (empData?.totalFoodBill)) < 0 &&
-                  <span className="bg-red-500 text-white px-2 py-1 rounded-lg">! Billable Limit Exceed By : {currencySymbol}{" "}{Math.abs(((billableLimit * exchangeRate) - (empData?.totalFoodBill)).toFixed(2))}</span>))}
+                  <span className="bg-red-500 text-white px-2 py-1 rounded-lg">! Billable Limit Exceeded By : {currencySymbol}{" "}{Math.abs(((billableLimit * exchangeRate) - (empData?.totalFoodBill)).toFixed(2))}</span>))}
             </>
           ) : (
             <h2 className="text-md font-medium">Total Food Bill: No Record Found</h2>

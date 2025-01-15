@@ -119,6 +119,10 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
           setTimeout(() => {
             navigate(0);
           }, 7000); // Delay the page refresh to ensure the last toast message is shown
+        } else {
+          setTimeout(() => {
+            navigate(0);
+          },3000)
         }
         
       } else {
