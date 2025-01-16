@@ -53,6 +53,7 @@ public class TripController {
     public ResponseEntity<?> createNewTripEntity(@RequestBody TripEntity trip){
         try {
             tripService.saveNewTrip(trip);
+//            tripService.sendTripEnrollmentNotification(trip);
             return new ResponseEntity<>(trip,HttpStatus.CREATED);
         }catch (Exception e){
             log.error("Error occurred while fetching trips ",e);
@@ -183,6 +184,21 @@ public class TripController {
                 return new ResponseEntity<>("Trip Updated Successfully",HttpStatus.CREATED);
             }else{
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/group-member-emailIds/{tId}")
+    public ResponseEntity<?> getGroupMemberEmailIds(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            List<String> emailIds = tripService.getGroupMemberEmailIds(tripId);
+            if(emailIds != null && !emailIds.isEmpty()){
+                return new ResponseEntity<>(emailIds,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }catch (Exception e){
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

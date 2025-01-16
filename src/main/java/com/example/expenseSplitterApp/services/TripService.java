@@ -9,14 +9,10 @@ import com.example.expenseSplitterApp.entity.TripEntity;
 import com.example.expenseSplitterApp.repositories.*;
 import com.example.expenseSplitterApp.utils.ExchangeRateGetterUtil;
 import com.example.expenseSplitterApp.utils.ExpenseCalculatorUtil;
-import com.mongodb.DBRef;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -51,12 +47,35 @@ public class TripService {
     @Autowired
     private BillRepositoryImpl billRepositoryImpl;
 
+    @Autowired
+    private EmployeeRepositoryImpl employeeRepositoryImpl;
+
+    @Autowired
+    private EmailService emailService;
+
+    public static <T> List<T> slice(List<T> list) {
+        if (list == null || list.size() <= 1) {
+            return list; // Handle empty list or list with only one element
+        }
+        return list.subList(1, list.size());
+    }
+
     public List<TripEntity> getAllTrips(String empId) {
         if(adminConfig.getAdminEmpIds().contains(empId)){
             return tripRepositoryImpl.getAllTripsWithinThreeMonths();
         }else{
             return tripRepositoryImpl.getAllTripsWithinThreeMonthsEmployeeSpecific(empId);
         }
+    }
+
+    public void sendTripEnrollmentNotification(TripEntity trip){
+        //Send Emails To The trip
+        List<String> gmEmailList = employeeRepositoryImpl.getAllEmailIdsOfEmployees(trip.getGroupMembersIds());
+
+        String to = gmEmailList.get(0);
+        List<String> cc = slice(gmEmailList);
+
+        emailService.sendNewTripNotificationEmail(to,cc,trip);
     }
 
     public void saveNewTrip(TripEntity trip) {
@@ -94,6 +113,15 @@ public class TripService {
         tripRepository.save(trip);
     }
 
+    public List<String> getGroupMemberEmailIds(ObjectId tripId){
+        TripEntity trip = tripRepository.findById(tripId).orElse(null);
+        if(trip != null){
+            List<String> gmEmailIds = employeeRepositoryImpl.getAllEmailIdsOfEmployees(trip.getGroupMembersIds());
+            return gmEmailIds;
+        }else{
+            return null;
+        }
+    }
 
     public TripEntity getTripById(ObjectId tripId) {
         return tripRepository.findById(tripId).orElse(null);
@@ -161,7 +189,6 @@ public class TripService {
         }
         return null;
     }
-
 
     public Boolean updateExchangeRate(String empId, ExchangeRateEntity exchangeRateEntity, ObjectId tripId){
         if(adminConfig.getAdminEmpIds().contains(empId)){

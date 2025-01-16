@@ -15,6 +15,18 @@ spring:
       max-request-size: 10MB
     tomcat:
       max-http-form-post-size: 10485760 # 10MB in bytes
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${JAVA_EMAIL}
+    password: ${JAVA_EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          #For Encryption Purposes (TLS Methods) (Start Transport Layer Security):
+          starttls:
+            enable: true
 
 
 exchange-rate-getter:

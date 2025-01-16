@@ -6,10 +6,7 @@ import com.example.expenseSplitterApp.config.CloudinaryConfig;
 import com.example.expenseSplitterApp.entity.BillsEntity;
 import com.example.expenseSplitterApp.entity.EmployeeEntity;
 import com.example.expenseSplitterApp.entity.TripEntity;
-import com.example.expenseSplitterApp.repositories.BillRepositoryImpl;
-import com.example.expenseSplitterApp.repositories.BillRepository;
-import com.example.expenseSplitterApp.repositories.EmployeeRepository;
-import com.example.expenseSplitterApp.repositories.TripRepository;
+import com.example.expenseSplitterApp.repositories.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,12 +47,39 @@ public class BillService {
     @Autowired
     private ImageCompressionService imageCompressionService;
 
+    @Autowired
+    private EmployeeRepositoryImpl employeeRepositoryImpl;
+
+    @Autowired
+    private EmailService emailService;
+
+    public static <T> List<T> slice(List<T> list) {
+        if (list == null || list.size() <= 1) {
+            return list; // Handle empty list or list with only one element
+        }
+        return list.subList(1, list.size());
+    }
+
     public List<BillsEntity> getFoodBillsByTripId(ObjectId tripId){
         return billRepositoryImpl.getFoodBillsByTripId(tripId);
     }
 
     public List<BillsEntity> getNonFoodBillsByTripId(ObjectId tripId){
         return billRepositoryImpl.getNonFoodBillsByTripId(tripId);
+    }
+
+    public void sendBillCreationNotification(BillsEntity bill){
+        if(bill.getContributorsIds().isEmpty()){
+            String billPayerEmailId = employeeRepositoryImpl.getEmployeeEmail(bill.getBillPayer());
+            String to = billPayerEmailId;
+            List<String> cc = new ArrayList<>();
+            emailService.sendNewBillNotificationEmail(to,cc,bill);
+        }else{
+            List<String> contributorEmailIds = employeeRepositoryImpl.getAllEmailIdsOfEmployees(bill.getContributorsIds());
+            String to = contributorEmailIds.get(0);
+            List<String> cc = slice(contributorEmailIds);
+            emailService.sendNewBillNotificationEmail(to,cc,bill);
+        }
     }
 
 
@@ -67,6 +91,14 @@ public class BillService {
         } catch (Exception e) {
             throw new RuntimeException("Error uploading image to Cloudinary", e);
         }
+    }
+
+    public List<String> getAllFoodBillImageUrls(ObjectId tripId){
+        return billRepositoryImpl.getImageUrlsOfFoodBillsByTripId(tripId);
+    }
+
+    public List<String> getAllNonFoodBillsImageUrls(ObjectId tripId){
+        return billRepositoryImpl.getImageUrlsOfNonFoodBillsByTripId(tripId);
     }
 
 

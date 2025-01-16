@@ -106,7 +106,7 @@ public class BillController {
                     billService.createBillNoSplit(bill,tripId);
                 }
             }
-
+//            billService.sendBillCreationNotification(bill);
             return new ResponseEntity<>(bill, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Unexpected Error While Creating Bill: ", e);
@@ -180,7 +180,39 @@ public class BillController {
             BillsEntity responseBill = billService.updateBill(updatedBill , billId, tripId);
             return new ResponseEntity<>(responseBill , HttpStatus.CREATED);
         } catch (Exception e) {
-            log.error("Unexpected Error While Creating Bill: ", e);
+            log.error("Unexpected Error While Updating Bill: ", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/food-bill-image-url/{tId}")
+    public ResponseEntity<?> getFoodBillsImageUrls(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            List<String> foodBillImgUrls = billService.getAllFoodBillImageUrls(tripId);
+            if(foodBillImgUrls != null && !foodBillImgUrls.isEmpty()){
+                return new ResponseEntity<>(foodBillImgUrls,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            log.error("Unexpected Error While Fetching Food Bill URLs: ", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/non-food-bill-image-url/{tId}")
+    public ResponseEntity<?> getNonFoodBillsImageUrls(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            List<String> nonFoodBillImgUrls = billService.getAllNonFoodBillsImageUrls(tripId);
+            if(nonFoodBillImgUrls != null && !nonFoodBillImgUrls.isEmpty()){
+                return new ResponseEntity<>(nonFoodBillImgUrls,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            log.error("Unexpected Error While Fetching Non-Food Bill URLs: ", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
