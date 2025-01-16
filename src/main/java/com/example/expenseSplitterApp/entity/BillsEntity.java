@@ -19,8 +19,8 @@ public class BillsEntity {
     @Id
     private ObjectId id;
     private ObjectId tripId;
-    @NonNull
     private String billType;
+    private String billUniqueId;
     @NonNull
     private Double billAmt;
 
@@ -28,9 +28,7 @@ public class BillsEntity {
     private Boolean splitBill;
     @NonNull
     private Boolean splitEqually;
-    @NonNull
     private int numberOfContributors;
-    @NonNull
     private String billPayer;
     private Double perPersonShare;
     private List<String> contributorsIds;

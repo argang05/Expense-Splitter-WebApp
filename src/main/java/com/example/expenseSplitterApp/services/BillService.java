@@ -690,6 +690,7 @@ public class BillService {
 
     public BillsEntity updateBill(BillsEntity updatedBill, ObjectId billId, ObjectId tripId) {
         // Analyze the split type
+
         boolean isSplit = updatedBill.getSplitBill();
         boolean isSplitEqual = updatedBill.getSplitEqually();
         String billType = updatedBill.getBillType();

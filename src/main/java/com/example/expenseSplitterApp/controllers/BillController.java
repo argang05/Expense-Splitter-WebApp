@@ -158,7 +158,7 @@ public class BillController {
     }
 
     @PutMapping(value = "/update-bill/billId/{bId}/tripId/{tId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createBill(
+    public ResponseEntity<?> updateBill(
             @PathVariable String bId,
             @PathVariable String tId,
             @RequestPart("bill") String billJson,  // or use a specific DTO class
@@ -175,6 +175,11 @@ public class BillController {
             if (image != null && !image.isEmpty()) {
                 String imageUrl = billService.uploadImageToCloudinary(image);
                 updatedBill.setImageUrl(imageUrl); // Set the image URL in the bill
+            }else{
+                BillsEntity bill = billRepository.findById(billId).orElse(null);
+                if(bill != null){
+                    updatedBill.setImageUrl(bill.getImageUrl());
+                }
             }
 
             BillsEntity responseBill = billService.updateBill(updatedBill , billId, tripId);
