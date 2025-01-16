@@ -188,8 +188,8 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
           {pageLoading ? (
             <Loader />
           ) : (
-            <div className="h-auto w-full py-5 sm:py-3 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
-              <div className="h-[auto] flex flex-col items-start justify-center gap-4">
+            <div className="h-auto w-full py-5 sm:py-4 px-5 bg-[#000249] text-white rounded-lg flex items-center justify-between bxs border-[3px] border-[#03abff]">
+              <div className="h-[auto] flex flex-col items-start justify-center gap-4 py-2">
                 <h2 className="text-sm sm:text-lg font-medium">Bill Type: {bill?.billType || 'N/A'}</h2>
                 <h2 className="text-sm sm:text-lg font-medium">
                   Bill Amount: {currencySymbol} {bill?.billAmt || 0}
@@ -209,7 +209,7 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
                   <h2 className="text-sm sm:text-lg font-medium">No Contributions</h2>
                 )}
               </div>
-                  <div className="flex flex-col items-center justify-center gap-2">
+                  <div className="sm:w-[20%] w-[40%] h-full flex flex-col items-center justify-center gap-2">
                     <div className="flex items-center gap-2 justify-between w-full">
                         <button onClick={handleBillDeletion} className="scale-out bg-red-500 text-white px-4 py-2 rounded-lg">
                           <i className='bx bxs-trash text-xl' ></i>
@@ -219,9 +219,9 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
                         </button>
                     </div>
                 {bill?.imageUrl ? (
-                  <a href={bill?.imageUrl} target="_blank" rel="noopener noreferrer">
+                  <a className="w-full h-60" href={bill?.imageUrl} target="_blank" rel="noopener noreferrer">
                     <img
-                      className="w-auto sm:w-52 h-60 border-[3px] border-[#03abff] rounded-lg"
+                      className="w-full h-full border-[3px] border-[#03abff] rounded-lg"
                       src={bill?.imageUrl}
                       alt="food-bill"
                     />

@@ -8,6 +8,7 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId , tripDate , tripDuration }) => {
   const [billData, setBillData] = useState({
     billType: "",
+    billUniqueId:"",
     billAmt: 0, // Change to number
     splitBill: false,
     splitEqually: true,
@@ -328,7 +329,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               value={billData.billType}
               onChange={handleInputChange}
               className="p-2 border rounded-md text-black"
-              required
+              
             >
               <option value="" disabled>
                 Select Bill Type
@@ -372,7 +373,6 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
                 <select
                   name="billPayer"
                   className="p-2 border rounded-md text-black"
-                  required
                   value={billData.billPayer}  
                   onChange={handleInputChange}    
                 >
@@ -497,7 +497,6 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
                     value={customContributions[id] || ""}
                     onChange={(e) => handleContributionChange(id, e.target.value)}
                     className="p-2 border rounded-md text-black"
-                    required
                   />
                 </div>
               ))}

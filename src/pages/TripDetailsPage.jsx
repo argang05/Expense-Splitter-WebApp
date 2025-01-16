@@ -11,6 +11,8 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 import { isAdmin } from '../config/adminConfig';
 import UpdateBillForm from '../components/UpdateBillForm';
 import UpdateTripForm from '../components/UpdateTripForm';
+import FoodBillImageGalleryComponent from '../components/FoodBillImageGalleryComponent';
+import NonFoodBillImageGalleryComponent from '../components/NonFoodBillImageGalleryComponent';
 
 const TripDetailsPage = () => {
   const { tripid } = useParams();
@@ -351,6 +353,14 @@ const TripDetailsPage = () => {
               />
             ))
           )}
+          <h3 className="text-xl text-[#000249] font-semibold">
+            Food Bill Images:
+          </h3>
+          <FoodBillImageGalleryComponent tripId={tripDetail?.id} />
+          <h3 className="text-xl text-[#000249] font-semibold">
+            Non Food Bill Images:
+          </h3>
+          <NonFoodBillImageGalleryComponent tripId={tripDetail?.id}/>
           <div className="w-full h-auto flex justify-center">
             <NavLink
               to={`/trip/employee-expense-report/${tripDetail?.id}`}

@@ -293,23 +293,23 @@ const UpdateBillForm = ({onBillUpdateFormSubmit, tripGroupMembersIds, bill , onC
     }
 
     // Check if image is uploaded
-    if (!image) {
-      toast.error("Please upload a Bill Image.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
-      setLoading(false);
-      setCustomContributions({});// Reset contributions
-      setBillData({...billData,billAmt:0})
-      return;
-    }
+    // if (!image) {
+    //   toast.error("Please upload a Bill Image.", {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: false,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "colored",
+    //     transition: Bounce,
+    //   });
+    //   setLoading(false);
+    //   setCustomContributions({});// Reset contributions
+    //   setBillData({...billData,billAmt:0})
+    //   return;
+    // }
 
     // If all validations pass
     const formData = new FormData();
@@ -563,13 +563,38 @@ const UpdateBillForm = ({onBillUpdateFormSubmit, tripGroupMembersIds, bill , onC
           ) }
 
           <div>
-            <label className="text-gray-400">Upload Bill Image:</label>
+            <label className="text-gray-400">Upload Bill Image (Max Size 10.0MB):</label>
             <input
-              type="file"
-              onChange={(e) => setImage(e.target.files[0])}
-              className="p-2 border rounded-md text-gray-400"
-              required
-            />
+                type="file"
+                onChange={(e) => {
+                  const selectedFile = e.target.files[0];
+                  
+                  // Check if file is selected and its size
+                  if (selectedFile) {
+                    // 10MB in bytes
+                    const maxSize = 10 * 1024 * 1024;
+                    if (selectedFile.size > maxSize) {
+                      toast.error("The file exceeds the maximum size of 10MB.", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "colored",
+                        transition: Bounce,
+                      });
+                      setImage(null); // Reset the image selection
+                      return;
+                    } else {
+                      setImage(selectedFile); // Set the valid image
+                    }
+                  }
+                }}
+                className="p-2 border rounded-md text-gray-400"
+                // required
+              />
           </div>
 
           <div className="flex justify-between">
