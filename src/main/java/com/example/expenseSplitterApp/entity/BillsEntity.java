@@ -20,10 +20,10 @@ public class BillsEntity {
     private ObjectId id;
     private ObjectId tripId;
     private String billType;
+    @NonNull
     private String billUniqueId;
     @NonNull
     private Double billAmt;
-
     @NonNull
     private Boolean splitBill;
     @NonNull
