@@ -58,8 +58,8 @@ const FoodBillImageGalleryComponent = ({ tripId }) => {
       {loading ? (
         <ComponentLoader />
       ) : (
-        <div className="container bxs border-[3px] border-[#03abff] bg-[#000249] sm:justify-normal w-full p-4 sm:px-6 sm:py-4 flex flex-col items-center gap-6 rounded-lg">
-          <div className="w-full flex flex-wrap gap-4 sm:gap-6">
+        <div className="container bxs border-[3px] border-[#03abff] bg-[#000249] sm:justify-normal w-full p-4 sm:px-7 sm:py-4 xl:px-6 xl:py-4 flex flex-col items-center gap-6 rounded-lg">
+          <div className="w-full flex flex-wrap gap-4 sm:gap-[15px] lg:gap-[21px] xl:gap-[26px]">
               {paginatedImages.length > 0 ?
                 ( <>
                       {paginatedImages.map((imageUrl, indx) => (

@@ -44,7 +44,6 @@ const TripDetailsPage = () => {
   const handleFormSubmit = async (formData) => {
     try {
       setLoading(true);
-
       // Create bill API call
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_BASE_URL}/api/bills/create-bill/tripId/${tripid}`,
@@ -332,7 +331,7 @@ const TripDetailsPage = () => {
           </h3>
           <div className="w-full h-auto flex justify-center">
             <button
-              className="orange-btn bxs border-[2px] border-[#000249] scale-out h-auto w-[50%] sm:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#F6490D] rounded-2xl"
+              className="orange-btn bxs border-[2px] border-[#000249] scale-out h-auto w-[50%] sm:w-[30%] lg:w-[15%] p-4 cursor-pointer text-lg font-semibold bg-[#F6490D] rounded-2xl"
               onClick={() => setShowForm(true)}
             >
               Add Bill
@@ -364,7 +363,7 @@ const TripDetailsPage = () => {
           <div className="w-full h-auto flex justify-center">
             <NavLink
               to={`/trip/employee-expense-report/${tripDetail?.id}`}
-              className="border-[2px] bxs border-[#000249] orange-btn scale-out h-auto w-[80%] sm:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#F6490D] rounded-2xl"
+              className="border-[2px] bxs border-[#000249] orange-btn scale-out h-auto w-[80%] sm:w-[70%] lg:w-[40%] text-center p-4 cursor-pointer text-md sm:text-lg font-semibold bg-[#F6490D] rounded-2xl"
             >
               Calculate Employee Expense Records
             </NavLink>
@@ -378,6 +377,7 @@ const TripDetailsPage = () => {
             tripDate={tripDetail?.tripDate}
             tripDuration={tripDetail?.numberOfDays}
             onBillFormSubmit={handleFormSubmit}
+            bills={tripDetail?.bills}
           />
         )}
         {exchangeRateFormVisible && (

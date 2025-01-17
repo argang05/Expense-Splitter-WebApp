@@ -169,6 +169,7 @@ const BillsShortComponent = ({ bill, currencySymbol, tripId, trip }) => {
       if (response.status === 200) {
         setPageLoading(false);
         toast.success("Bill Deleted Successfully!", { position: "top-right", autoClose: 5000, theme: "colored", transition: Bounce });
+        alert("Bill Deleted Successfully!");
         navigate(0);
       } else {
         setPageLoading(false);

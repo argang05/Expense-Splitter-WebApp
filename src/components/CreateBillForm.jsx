@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 
-const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId , tripDate , tripDuration }) => {
+const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId , tripDate , tripDuration , bills}) => {
   const [billData, setBillData] = useState({
     billType: "",
     billUniqueId:"",
@@ -16,7 +16,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     contributorsIds: [],
     billDate: "",
   });
-
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const [employeeList, setEmployeeList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredEmployees, setFilteredEmployees] = useState([]);
@@ -28,6 +28,8 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   const [billSplitText, setBillSplitText] = useState("No");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); 
+  const [showConfirmation, setShowConfirmation] = useState(false); // State for confirmation overlay
+  const [warningMessage, setWarningMessage] = useState("");
 
 
   useEffect(() => {
@@ -74,6 +76,15 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     onClose(); // Close the form/modal
   };
 
+  // Function to handle confirmation
+  const handleConfirmation = (proceed, e) => {
+    setShowConfirmation(false); // Close the overlay
+
+    if (proceed) {
+      setIsConfirmed(true); // Mark as confirmed to skip duplicate check
+      handleSubmit(e, true); // Pass the confirmation flag directly
+    }
+  };
 
   useEffect(() => {
     if (searchQuery?.trim() !== "") {
@@ -148,69 +159,39 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     return totalContributions === parseFloat(billData.billAmt);
   };
 
-  const handleSubmit = async (e) => {
+  // Updated handleSubmit function
+  const handleSubmit = async (e, confirmed = false) => {
     e.preventDefault();
+
+    // Generate billUniqueId
+    const billUniqueId = `${billData.billDate}-${billData.billAmt}`;
+    console.log("Generated Bill Unique ID:", billUniqueId);
+
+    // Update billData with the unique ID
+    const updatedData = { ...billData, billUniqueId };
+    setBillData(updatedData);
+
+    // Check for duplicate billUniqueId only if not confirmed
+    if (!confirmed) {
+      const duplicateBill = bills.some(
+        (bill) => bill.billUniqueId && bill.billUniqueId === billUniqueId
+      );
+
+      if (duplicateBill) {
+        setWarningMessage(
+          "Same Bill Already Exists! Do you still want to create this bill?"
+        );
+        setShowConfirmation(true); // Show the confirmation overlay
+        setLoading(false); // Stop loading
+        return;
+      }
+    }
+
     setLoading(true); // Set loading to true when validation begins
 
-    if (billSplitText === "Yes") {
-      setBillData(billData.splitBill = true)
-    }
-
-    if (splitEquallyText === "No") {
-      setBillData(billData.splitEqually = false)
-    }
-
-    console.log(billData)
-
-    // Parse trip start and end dates
-    const tripStartDate = new Date(tripDate); // Convert UNIX timestamp to date
-    const tripEndDate = new Date(tripDate + tripDuration * 24 * 60 * 60 * 1000); // Add trip duration in milliseconds
-    const billDate = new Date(billData.billDate);
-
-
-    // Check if bill amount is valid
+    // Handle the rest of the form validations
     if (billData.billAmt <= 0) {
-        toast.error("Please enter a valid Bill Amount greater than 0.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setCustomContributions({});// Reset contributions
-        setBillData({...billData,billAmt:0})
-        setLoading(false);
-        return;
-    }
-    
-    if (billDate < tripStartDate || billDate > tripEndDate) {
-    toast.error(
-      `Bill Date must be between ${tripStartDate.toLocaleDateString()} and ${tripEndDate.toLocaleDateString()}.`,
-      {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      }
-      );
-    setCustomContributions({});// Reset contributions
-    setBillData({...billData,billAmt:0})
-    setLoading(false);
-    return;
-  }
-
-    // Check if split bill option is selected
-    if (billSplitText !== "Yes" && billSplitText !== "No") {
-      toast.error("Please select whether to split the bill.", {
+      toast.error("Please enter a valid Bill Amount greater than 0.", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -221,14 +202,23 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
         theme: "colored",
         transition: Bounce,
       });
+      setCustomContributions({});
+      setBillData({ ...billData, billAmt: 0 });
       setLoading(false);
       return;
     }
 
-    // If splitting the bill, check further options
-    if (billSplitText === "Yes") {
-      if (splitEquallyText !== "Yes" && splitEquallyText !== "No") {
-        toast.error("Please select whether to split the bill equally.", {
+    // Example: Bill date validation
+    const tripStartDate = new Date(tripDate);
+    const tripEndDate = new Date(
+      tripDate + tripDuration * 24 * 60 * 60 * 1000
+    );
+    const billDate = new Date(billData.billDate);
+
+    if (billDate < tripStartDate || billDate > tripEndDate) {
+      toast.error(
+        `Bill Date must be between ${tripStartDate.toLocaleDateString()} and ${tripEndDate.toLocaleDateString()}.`,
+        {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -238,81 +228,22 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           progress: undefined,
           theme: "colored",
           transition: Bounce,
-        }); 
-
-        setLoading(false);
-        return;
-      }
-
-    // Validate contributions if not splitting equally
-    if (billSplitText === "Yes" && splitEquallyText === "No") {
-      if (!validateContributions()) {
-        toast.error("The sum of contributions must equal the bill amount.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setCustomContributions({});// Reset contributions
-        setBillData({...billData,billAmt:0})
-        setLoading(false);
-        return;
-      }
-      billData.contributerShare = customContributions; // Update contributor shares
-    }
-
-      // Check if contributors are selected
-      if (billData.contributorsIds.length === 0) {
-        toast.error("Please add at least one contributor.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setCustomContributions({});// Reset contributions
-        setBillData({...billData,billAmt:0})
-        setLoading(false);
-        return;
-      }
-    }
-
-    // Check if image is uploaded
-    if (!image) {
-      toast.error("Please upload a Bill Image.", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
+        }
+      );
+      setCustomContributions({});
+      setBillData({ ...billData, billAmt: 0 });
       setLoading(false);
-      setCustomContributions({});// Reset contributions
-      setBillData({...billData,billAmt:0})
       return;
     }
 
     // If all validations pass
     const formData = new FormData();
-    formData.append("bill", JSON.stringify(billData));
+    formData.append("bill", JSON.stringify(updatedData));
     formData.append("image", image);
 
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
     onBillFormSubmit(formData); // Submit the form data
     onClose(); // Close the form
@@ -590,18 +521,44 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
           </div>
 
           <div className="flex justify-between">
-            <button type="button" onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded-md">
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-red-500 text-white px-4 py-2 rounded-md"
+            >
               Cancel
             </button>
             <button
-                type="submit"
-                className="bg-emerald-500 text-white px-4 py-2 rounded-md"
-                disabled={loading} // Disable button while loading
-              >
-                {loading ? "Loading..." : "Submit"}
-              </button>
+              type="submit"
+              className="bg-emerald-500 text-white px-4 py-2 rounded-md"
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? "Loading..." : "Submit"}
+            </button>
           </div>
         </form>
+         {/* Confirmation Overlay */}
+        {showConfirmation && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+              <p className="text-lg text-[#000249] font-semibold mb-4">{warningMessage}</p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={(e) => handleConfirmation(true, e)}
+                  className="bg-emerald-500 text-white px-4 py-2 rounded-md"
+                >
+                  Yes
+                </button>
+                <button
+                  onClick={(e) => handleConfirmation(false, e)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  No
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <ToastContainer
           position="top-right"
