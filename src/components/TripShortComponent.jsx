@@ -37,7 +37,7 @@ const TripShortComponent = ({ trip }) => {
       console.error("Error Deleting Trip", err.response ? err.response.data : err.message);
     }
   }
-    const onTripUpdateFormSubmit = async (updatedTripData) => {
+  const onTripUpdateFormSubmit = async (updatedTripData) => {
     try {
       setPageLoading(true);
       const response = await axios.put(

@@ -208,51 +208,6 @@ const TripDetailsPage = () => {
     }
   };
 
-  const onTripUpdateFormSubmit = async (updatedTripData) => {
-    try {
-      setLoading(true);
-      const response = await axios.put(
-        `${import.meta.env.VITE_BACKEND_BASE_URL}/api/trip/update-trip/${tripid}`,
-        updatedTripData
-      );
-      if (response.status === 201) {
-        setLoading(false);
-        toast.success("Trip Updated Successfully!", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-          transition: Bounce,
-        });
-        setTimeout(() => {
-          navigate(0);
-        }, 6000);
-      }
-    }
-    catch (err) {
-      setLoading(false);
-      console.error(
-        "Failed to update trip:",
-        err.response ? err.response.data : err.message
-      );
-      toast.error("An error occurred while updating trip!", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-        transition: Bounce,
-      });
-    }
-  }
-
   return (
     <>
       {loading && <Loader />}

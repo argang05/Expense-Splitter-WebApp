@@ -291,27 +291,6 @@ const UpdateBillForm = ({onBillUpdateFormSubmit, tripGroupMembersIds, bill , onC
         return;
       }
     }
-
-    // Check if image is uploaded
-    // if (!image) {
-    //   toast.error("Please upload a Bill Image.", {
-    //     position: "top-right",
-    //     autoClose: 5000,
-    //     hideProgressBar: false,
-    //     closeOnClick: false,
-    //     pauseOnHover: true,
-    //     draggable: true,
-    //     progress: undefined,
-    //     theme: "colored",
-    //     transition: Bounce,
-    //   });
-    //   setLoading(false);
-    //   setCustomContributions({});// Reset contributions
-    //   setBillData({...billData,billAmt:0})
-    //   return;
-    // }
-
-    // If all validations pass
     const formData = new FormData();
     formData.append("bill", JSON.stringify(billData));
     formData.append("image", image);
