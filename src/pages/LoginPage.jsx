@@ -82,6 +82,7 @@ const LoginPage = () => {
             className="bg-[#F3F3F3] text-[#000249] border-2 border-[#03abff] rounded-xl p-2"
             type="text"
             name="empId"
+            autoComplete="off"
             placeholder="Enter Employee ID..."
             required
             value={userData.empId}
@@ -97,6 +98,7 @@ const LoginPage = () => {
               name="password"
               placeholder="Enter Password..."
               required
+              autoComplete="off"
               value={userData.password}
               onChange={(e) => {
                 handleChange(e);

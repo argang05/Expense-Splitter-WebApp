@@ -295,9 +295,9 @@ const UpdateBillForm = ({onBillUpdateFormSubmit, tripGroupMembersIds, bill , onC
     formData.append("bill", JSON.stringify(billData));
     formData.append("image", image);
 
-    for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // for (const [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
 
     onBillUpdateFormSubmit(formData); // Submit the form data
     onClose(); // Close the form
