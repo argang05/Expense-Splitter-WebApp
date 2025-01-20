@@ -289,7 +289,7 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
               value={billData.billType}
               onChange={handleInputChange}
               className="p-2 border rounded-md text-black"
-              
+              required
             >
               <option value="" disabled>
                 Select Bill Type
