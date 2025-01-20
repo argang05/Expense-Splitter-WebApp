@@ -243,6 +243,28 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
       return;
     }
 
+        // Validate contributions if not splitting equally
+    if (billSplitText === "Yes" && splitEquallyText === "No") {
+      if (!validateContributions()) {
+        toast.error("The sum of contributions must equal the bill amount.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+          transition: Bounce,
+        });
+        setCustomContributions({});// Reset contributions
+        setBillData({...billData,billAmt:0})
+        setLoading(false);
+        return;
+      }
+      updatedData.contributerShare = customContributions; // Update contributor shares
+    }
+
     // If all validations pass
     const formData = new FormData();
     formData.append("bill", JSON.stringify(updatedData));
