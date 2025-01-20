@@ -163,6 +163,13 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
   const handleSubmit = async (e, confirmed = false) => {
     e.preventDefault();
 
+     if (billSplitText === "Yes") {
+      setBillData(billData.splitBill = true)
+    }
+    if (splitEquallyText === "No") {
+      setBillData(billData.splitEqually = false)
+    }
+
     // Generate billUniqueId
     const billUniqueId = `${billData.billDate}-${billData.billAmt}`;
     console.log("Generated Bill Unique ID:", billUniqueId);
@@ -241,9 +248,9 @@ const CreateBillForm = ({ tripGroupMembersIds, onClose, onBillFormSubmit, tripId
     formData.append("bill", JSON.stringify(updatedData));
     formData.append("image", image);
 
-    // for (const [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
 
     onBillFormSubmit(formData); // Submit the form data
     onClose(); // Close the form

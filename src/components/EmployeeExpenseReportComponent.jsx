@@ -25,34 +25,29 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport , exchangeRate }) => 
   // },[])
 
   useEffect(() => {
-    
-    // Fetch payee names if dues exist
     const fetchPayeeNames = async () => {
       if (empExpenceReport?.dues && Object.keys(empExpenceReport.dues).length > 0) {
-        const payeeNamesMap = {};
+        const payeeNamesMap = { ...payeeNames }; // Copy existing payee names to avoid re-fetching them
 
-        // Iterate over all debtor IDs (outer keys)
         for (const debtorEmpId of Object.keys(empExpenceReport.dues)) {
           const payees = empExpenceReport.dues[debtorEmpId];
 
-          // Iterate over all payee IDs (inner keys)
           for (const payeeEmpId of Object.keys(payees)) {
             if (!payeeNamesMap[payeeEmpId]) {
-              // Fetch payee name only if not already fetched
               const name = await getEmployeeNameById(payeeEmpId);
               payeeNamesMap[payeeEmpId] = name;
             }
           }
         }
 
-        // Update state with the payee names map
-        setPayeeNames(payeeNamesMap);
+        setPayeeNames(payeeNamesMap); // Update payee names after fetching
       }
-      setLoading(false);
+      setLoading(false); // Mark loading as false after fetching data
     };
 
     fetchPayeeNames();
-  }, [empExpenceReport,payeeNames]);
+  }, [empExpenceReport]); // Only trigger when empExpenceReport changes
+
 
 
   const renderDues = (dues) => {
