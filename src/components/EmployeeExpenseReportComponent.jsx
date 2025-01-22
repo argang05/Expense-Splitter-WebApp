@@ -65,7 +65,7 @@ const EmployeeExpenseReportComponent = ({ empExpenceReport , exchangeRate }) => 
         for (const [payeeEmpId, amount] of Object.entries(payees)) {
           renderedDues.push(
             <h3 key={`${payerEmpId}-${payeeEmpId}`} className="text-lg text-[#000249] font-medium">
-              {empExpenceReport.empName} owes {amount} {empExpenceReport.currencySymbol} to Employee: {payeeNames[payeeEmpId] || `Loading (${payeeEmpId})`}
+              {empExpenceReport.empName} owes {(amount).toFixed(2)} {empExpenceReport.currencySymbol} to Employee: {payeeNames[payeeEmpId] || `Loading (${payeeEmpId})`}
             </h3>
           );
         }
