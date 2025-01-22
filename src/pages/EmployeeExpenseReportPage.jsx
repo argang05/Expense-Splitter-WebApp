@@ -86,9 +86,12 @@ const EmployeeExpenseReportPage = () => {
                             <>
                                 <h2 className="text-xl text-[#000249] font-semibold mb-4">Final Simplified Dues Report</h2>
                                 <ul className="list-disc list-inside text-left">
-                                    {finalDuesReport?.map((report, index) => (
+                                        {(finalDuesReport.length > 0) ?
+                                            finalDuesReport?.map((report, index) => (
                                         <li key={index} className="mb-2 text-[#000249]">{report}</li>
-                                    ))}
+                                            )) : 
+                                        <p className='mb-2 text-[#000249]'>No Dues Record Found!</p>
+                                    }
                                 </ul>
                                 <button
                                     onClick={handleCloseOverlay}
