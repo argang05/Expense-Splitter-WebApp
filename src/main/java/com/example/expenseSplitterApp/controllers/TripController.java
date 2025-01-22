@@ -204,4 +204,20 @@ public class TripController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/get-final-debt-report/{tId}")
+    public ResponseEntity<?> getFinalDebtReport(@PathVariable String tId){
+        try{
+            ObjectId tripId = new ObjectId(tId);
+            TripEntity trip = tripService.getTripById(tripId);
+            if(trip != null){
+                List<String> finalDebtReport = tripService.simplifyDebts(trip);
+                return new ResponseEntity<>(finalDebtReport,HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>("Trip Not Found!",HttpStatus.NOT_FOUND);
+            }
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -280,5 +280,83 @@ public class TripService {
         return true;
     }
 
+    public List<String> simplifyDebts(TripEntity trip) {
+        Map<String, Map<String, Double>> dues = trip.getDues();
+        String currencySymbol = trip.getCurrencySymbol();
+        Map<String, Double> netBalances = new HashMap<>();
+
+        // Step 1: Calculate net balances
+        for (String debtorId : dues.keySet()) {
+            Map<String, Double> creditors = dues.get(debtorId);
+
+            // Subtract the amount owed by the debtor
+            for (Map.Entry<String, Double> creditor : creditors.entrySet()) {
+                netBalances.put(debtorId, netBalances.getOrDefault(debtorId, 0.0) - creditor.getValue());
+                String creditorId = creditor.getKey();
+                double amount = creditor.getValue();
+
+                // Add the amount to the creditor
+                netBalances.put(creditorId, netBalances.getOrDefault(creditorId, 0.0) + amount);
+            }
+        }
+
+        // Step 2: Sort creditors and debtors
+        PriorityQueue<EmployeeBalance> creditors = new PriorityQueue<>((a, b) -> Double.compare(b.balance, a.balance));
+        PriorityQueue<EmployeeBalance> debtors = new PriorityQueue<>((a, b) -> Double.compare(a.balance, b.balance));
+
+        for (Map.Entry<String, Double> entry : netBalances.entrySet()) {
+            String empId = entry.getKey();
+            double balance = entry.getValue();
+
+            if (balance > 0) {
+                creditors.add(new EmployeeBalance(empId, balance));
+            } else if (balance < 0) {
+                debtors.add(new EmployeeBalance(empId, balance));
+            }
+        }
+
+        // Step 3: Simplify debts
+        List<String> transactions = new ArrayList<>();
+        while (!creditors.isEmpty() && !debtors.isEmpty()) {
+            EmployeeBalance creditor = creditors.poll();
+            EmployeeBalance debtor = debtors.poll();
+
+            double settleAmount = Math.min(creditor.balance, -debtor.balance);
+
+            // Fetch employee names
+
+            String creditorName = employeeService.getEmployeeByEmpId(creditor.empId).getEmpName();
+            String debtorName = employeeService.getEmployeeByEmpId(debtor.empId).getEmpName();
+
+            // Record the transaction
+            transactions.add(debtorName + " owes " + creditorName + " : " + currencySymbol + " " + (Math.round(settleAmount*100.0)/100.0));
+
+            // Update balances
+            creditor.balance -= settleAmount;
+            debtor.balance += settleAmount;
+
+            // Re-add to priority queues if not fully settled
+            if (creditor.balance > 0) {
+                creditors.add(creditor);
+            }
+            if (debtor.balance < 0) {
+                debtors.add(debtor);
+            }
+        }
+
+        return transactions;
+    }
+
+
+    private static class EmployeeBalance {
+        String empId;
+        double balance;
+
+        public EmployeeBalance(String empId, double balance) {
+            this.empId = empId;
+            this.balance = balance;
+        }
+    }
+
 }
 
